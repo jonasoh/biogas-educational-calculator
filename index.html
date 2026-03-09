@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beräkningsverktyg för fortbildningskurs</title>
+
+  <!-- KaTeX for mathematical formula rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-main">
+      <h1>Beräkningsverktyg för fortbildningskurs</h1>
+      <p class="subtitle">En interaktiv guide till beräkning av processens parametraer</p>
+    </div>
+    <div id="converter-container">
+      <button id="converter-toggle" aria-expanded="false" aria-controls="converter-panel" title="Unit Converter">
+        ⇌ Units
+      </button>
+      <div id="converter-panel" role="dialog" aria-label="Unit converter" hidden>
+        <div class="converter-header">
+          <span class="converter-title">Unit Converter</span>
+          <button class="converter-close" aria-label="Close unit converter">✕</button>
+        </div>
+        <div class="converter-body">
+          <div class="converter-row">
+            <input type="number" id="conv-from-value" placeholder="Value" autocomplete="off">
+            <select id="conv-from-unit" aria-label="From unit"></select>
+          </div>
+          <div class="converter-arrow" aria-hidden="true">↓</div>
+          <div class="converter-row">
+            <input type="number" id="conv-to-value" disabled aria-label="Converted value">
+            <select id="conv-to-unit" aria-label="To unit"></select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav id="tab-nav" role="tablist" aria-label="Calculator tabs">
+    <!-- Tabs are rendered here by app.js -->
+  </nav>
+
+  <main id="tab-content">
+    <!-- Tab content is rendered here by app.js -->
+  </main>
+
+  <footer>
+    <p>SLU 2026</p>
+  </footer>
+
+  <!-- Content must be loaded before app.js -->
+  <script src="content.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

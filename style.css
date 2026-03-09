@@ -1,0 +1,611 @@
+/* ============================================================
+   Biogas Educational Calculator — Stylesheet
+   ============================================================ */
+
+/* --- Reset & Base ------------------------------------------ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --colour-bg:          #f7f8fa;
+  --colour-surface:     #ffffff;
+  --colour-border:      #dde1e9;
+  --colour-primary:     #2a6b3c;   /* biogas green */
+  --colour-primary-lt:  #e8f4ec;
+  --colour-accent:      #1a4f8a;   /* equation blue */
+  --colour-accent-lt:   #e8f0fb;
+  --colour-result:      #1a4f8a;
+  --colour-text:        #1a1d23;
+  --colour-muted:       #6b7280;
+  --colour-low:         #b45309;   /* amber for out-of-range low */
+  --colour-low-bg:      #fffbeb;
+  --colour-ok:          #166534;   /* green for in-range */
+  --colour-ok-bg:       #f0fdf4;
+  --colour-high:        #9a3412;   /* orange-red for out-of-range high */
+  --colour-high-bg:     #fff7ed;
+
+  --radius:    8px;
+  --radius-lg: 12px;
+  --shadow:    0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+
+  --font-body: 'Georgia', 'Times New Roman', serif;
+  --font-ui:   system-ui, -apple-system, sans-serif;
+  --font-mono: 'Menlo', 'Consolas', monospace;
+
+  --max-width: 860px;
+}
+
+html {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--colour-text);
+  background: var(--colour-bg);
+  font-family: var(--font-body);
+}
+
+/* --- Layout ------------------------------------------------ */
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: var(--colour-primary);
+  color: #fff;
+  padding: 1rem 1.25rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.header-main {
+  text-align: center;
+  flex: 1;
+}
+
+header h1 {
+  font-family: var(--font-ui);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+header .subtitle {
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  opacity: 0.85;
+  margin-top: 0.2rem;
+}
+
+/* --- Unit Converter --------------------------------------- */
+
+#converter-container {
+  position: relative;
+  flex-shrink: 0;
+}
+
+#converter-toggle {
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(255,255,255,0.18);
+  border: 1.5px solid rgba(255,255,255,0.4);
+  border-radius: var(--radius);
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+#converter-toggle:hover,
+#converter-toggle[aria-expanded="true"] {
+  background: rgba(255,255,255,0.3);
+  border-color: rgba(255,255,255,0.7);
+}
+
+#converter-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 200;
+  width: 300px;
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+#converter-panel[hidden] {
+  display: none;
+}
+
+.converter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--colour-accent-lt);
+  border-bottom: 1px solid var(--colour-border);
+  padding: 0.6rem 0.9rem;
+}
+
+.converter-title {
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--colour-accent);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.converter-close {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--colour-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  line-height: 1;
+  transition: color 0.12s, background 0.12s;
+}
+
+.converter-close:hover {
+  color: var(--colour-text);
+  background: var(--colour-border);
+}
+
+.converter-body {
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.converter-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.converter-row input {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  padding: 0.5rem 0.6rem;
+  border: 1.5px solid var(--colour-border);
+  border-radius: var(--radius);
+  background: var(--colour-surface);
+  color: var(--colour-text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.converter-row input:focus {
+  outline: none;
+  border-color: var(--colour-accent);
+  box-shadow: 0 0 0 3px rgba(26,79,138,.12);
+}
+
+.converter-row input:disabled {
+  background: var(--colour-bg);
+  color: var(--colour-accent);
+  font-weight: 600;
+  border-color: var(--colour-border);
+}
+
+.converter-row select {
+  font-family: var(--font-ui);
+  font-size: 0.88rem;
+  padding: 0.5rem 0.4rem;
+  border: 1.5px solid var(--colour-border);
+  border-radius: var(--radius);
+  background: var(--colour-surface);
+  color: var(--colour-text);
+  cursor: pointer;
+  min-width: 80px;
+  transition: border-color 0.15s;
+}
+
+.converter-row select:focus {
+  outline: none;
+  border-color: var(--colour-accent);
+}
+
+.converter-arrow {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--colour-muted);
+  padding: 0.35rem 0;
+  line-height: 1;
+}
+
+/* --- Equation Groups -------------------------------------- */
+
+/* Shared-inputs area at the top of a group card */
+.group-inputs {
+  padding-bottom: 1.25rem;
+  margin-bottom: 0.25rem;
+  border-bottom: 2px solid var(--colour-border);
+}
+
+/* Each sub-equation section within a group */
+.sub-equation {
+  padding-top: 1.25rem;
+}
+
+/* Dashed divider between sub-equations */
+.sub-divider {
+  border: none;
+  border-top: 1px dashed var(--colour-border);
+  margin-top: 1.25rem;
+}
+
+/* Sub-equation heading (h3, slightly smaller than the card h2) */
+.sub-equation-title {
+  font-family: var(--font-ui);
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--colour-accent);
+  margin-bottom: 0.75rem;
+}
+
+/* --- Tab Navigation --------------------------------------- */
+
+#tab-nav {
+  background: var(--colour-surface);
+  border-bottom: 2px solid var(--colour-border);
+  display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#tab-nav button {
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--colour-muted);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 0.85rem 1.4rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+  margin-bottom: -2px;
+}
+
+#tab-nav button:hover {
+  color: var(--colour-primary);
+}
+
+#tab-nav button[aria-selected="true"] {
+  color: var(--colour-primary);
+  border-bottom-color: var(--colour-primary);
+}
+
+/* --- Main Content ----------------------------------------- */
+
+main {
+  flex: 1;
+  padding: 2rem 1rem;
+}
+
+.tab-panel {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.tab-panel[hidden] {
+  display: none;
+}
+
+/* Tab intro text */
+.tab-intro {
+  background: var(--colour-primary-lt);
+  border-left: 4px solid var(--colour-primary);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+  font-size: 0.975rem;
+}
+
+/* --- Equation Card ---------------------------------------- */
+
+.equation-card {
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.equation-header {
+  background: var(--colour-accent-lt);
+  border-bottom: 1px solid var(--colour-border);
+  padding: 1rem 1.5rem;
+}
+
+.equation-header h2 {
+  font-family: var(--font-ui);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--colour-accent);
+}
+
+.equation-body {
+  padding: 1.5rem;
+}
+
+/* Intro paragraph per equation */
+.equation-intro {
+  font-size: 0.95rem;
+  color: var(--colour-text);
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+}
+
+/* --- Formula Display -------------------------------------- */
+
+.formula-display {
+  background: var(--colour-bg);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius);
+  padding: 1rem 1.5rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+
+.formula-display .katex {
+  font-size: 1.2rem;
+}
+
+.formula-label {
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--colour-muted);
+  margin-bottom: 0.4rem;
+}
+
+/* --- Parameter Inputs ------------------------------------- */
+
+.parameters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.param-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.param-label {
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--colour-text);
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.param-label .param-unit {
+  font-weight: 400;
+  color: var(--colour-muted);
+  font-size: 0.78rem;
+}
+
+.param-desc {
+  font-family: var(--font-ui);
+  font-size: 0.76rem;
+  color: var(--colour-muted);
+  line-height: 1.4;
+}
+
+.param-field input {
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--colour-border);
+  border-radius: var(--radius);
+  background: var(--colour-surface);
+  color: var(--colour-text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+}
+
+.param-field input:focus {
+  outline: none;
+  border-color: var(--colour-accent);
+  box-shadow: 0 0 0 3px rgba(26,79,138,.12);
+}
+
+.param-field input.invalid {
+  border-color: #dc2626;
+}
+
+/* --- Result Section --------------------------------------- */
+
+.result-section {
+  margin-top: 0.5rem;
+}
+
+.result-section[hidden] {
+  display: none;
+}
+
+/* Divider before result */
+.result-divider {
+  border: none;
+  border-top: 1px dashed var(--colour-border);
+  margin: 1.25rem 0;
+}
+
+/* Formula with substituted values */
+.formula-filled-display {
+  background: var(--colour-accent-lt);
+  border: 1px solid #c3d5f0;
+  border-radius: var(--radius);
+  padding: 0.85rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--colour-accent);
+  text-align: center;
+  margin-bottom: 1.25rem;
+  overflow-x: auto;
+  word-break: break-all;
+}
+
+/* Result box */
+.result-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--colour-result);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.result-label {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.result-value {
+  font-family: var(--font-ui);
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.result-unit {
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  opacity: 0.85;
+  margin-left: 0.2rem;
+}
+
+/* Typical range indicator */
+.range-indicator {
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+}
+
+.range-indicator.range-low {
+  background: var(--colour-low-bg);
+  border: 1px solid #fcd34d;
+  color: var(--colour-low);
+}
+
+.range-indicator.range-ok {
+  background: var(--colour-ok-bg);
+  border: 1px solid #86efac;
+  color: var(--colour-ok);
+}
+
+.range-indicator.range-high {
+  background: var(--colour-high-bg);
+  border: 1px solid #fdba74;
+  color: var(--colour-high);
+}
+
+.range-indicator .range-label {
+  font-weight: 700;
+  margin-right: 0.3rem;
+}
+
+/* Educational text */
+.educational-text {
+  border-top: 1px solid var(--colour-border);
+  padding-top: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--colour-text);
+}
+
+.educational-text p + p {
+  margin-top: 0.75rem;
+}
+
+/* --- Footer ----------------------------------------------- */
+
+footer {
+  background: var(--colour-surface);
+  border-top: 1px solid var(--colour-border);
+  padding: 1rem 1.5rem;
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  color: var(--colour-muted);
+}
+
+/* --- Responsive ------------------------------------------- */
+
+@media (max-width: 600px) {
+  header {
+    flex-wrap: wrap;
+  }
+
+  header h1 {
+    font-size: 1.25rem;
+  }
+
+  header .subtitle {
+    font-size: 0.8rem;
+  }
+
+  #converter-panel {
+    width: calc(100vw - 2rem);
+    right: -0.5rem;
+  }
+
+  .equation-body {
+    padding: 1rem;
+  }
+
+  .parameters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .result-value {
+    font-size: 1.4rem;
+  }
+}
+
+/* --- Print ------------------------------------------------ */
+
+@media print {
+  #tab-nav { display: none; }
+  .tab-panel[hidden] { display: block; }
+  .equation-card { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+  footer { display: none; }
+}
