@@ -337,9 +337,15 @@ function buildParamField(param, eq, updateCallback) {
   input.setAttribute("id", `input-${eq.id}-${param.id}`);
   input.setAttribute("data-param", param.id);
   input.setAttribute("data-eq", eq.id);
-  input.setAttribute("step", "any");
+  input.setAttribute("step", param.step !== undefined ? param.step : "any");
   if (param.placeholder !== undefined) input.placeholder = param.placeholder;
   if (param.min !== undefined)         input.setAttribute("min", param.min);
+  if (param.decimals !== undefined) {
+    input.addEventListener("blur", () => {
+      const val = parseFloat(input.value);
+      if (!isNaN(val)) input.value = val.toFixed(param.decimals);
+    });
+  }
 
   const desc = document.createElement("span");
   desc.classList.add("param-desc");

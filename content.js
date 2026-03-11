@@ -37,12 +37,15 @@
  * PARAMETERFÄLT:
  *   id          — kort unikt namn som matchar formula_calc-uttrycket
  *   name        — fullt visningsnamn
- *   symbol      — KaTeX-symbol (t.ex. "m_{dry}")
  *   unit        — fysikalisk enhet som visas bredvid inmatningen
  *   description — ledtext på en rad som visas under inmatningen
  *   placeholder — exempelvärde som visas i grått när fältet är tomt
  *   min         — lägsta tillåtna värde (använd 0.001 istället för 0
  *                 för parametrar i nämnaren för att undvika division med noll)
+ *   step        — stegstorlek vid pil upp/ned i inmatningsfältet
+ *                 (t.ex. 1, 0.1, 0.01 — utelämna för fri inmatning)
+ *   decimals    — avrunda visad siffra till N decimaler när fältet
+ *                 lämnas (t.ex. 1 → "3.1", 2 → "3.14")
  *
  * TYPISKT INTERVALL:
  *   min, max    — gränserna för den "normala" zonen
@@ -72,13 +75,15 @@ const BIOGAS_CONTENT = {
     // ========================================================
     {
       id: "biomass-loading",
-      title: "Substratberäkningar",
+      title: "Driftparametrar",
       intro: `I detta avsnitt beräknas grundläggande parametrar för att karakterisera biogassubstrat och -processer. 
 Torrsubstans (Total Solids, TS) och glödförlust (Volatile Solids, VS) beskriver hur stor
 andel av substratet som är torrsubstans respektive hur stor del av den som
 är biologiskt (teoretiskt) nedbrytbar. Organisk belastning (Organic Loading Rate, OLR) och
 hydraulisk retentionstid (Hydraulic Retention Time, HRT) anger sedan hur hårt reaktorn belastas och hur länge materialet
-uppehåller sig inne i rötkammaren.`,
+uppehåller sig inne i rötkammaren.
+
+Du kan läsa mer om dessa beräkningar i handboken på s 72–74. `,
 
       equations: [
 
@@ -98,7 +103,7 @@ uppehåller sig inne i rötkammaren.`,
           intro: `Dessa tre storheter bestäms alltid tillsammans från samma laboratorieprov.
 Man väger det färska provet, torkar det vid 105°C och väger igen (ger
 torrsubstans, TS), glödgar sedan det torra provet vid 550°C och väger
-askan (ger glödförlusten, VS).
+askan (ger glödförlusten, VS). 
 
 Ange de tre massorna nedan för att beräkna värdena.`,
 
@@ -107,29 +112,32 @@ Ange de tre massorna nedan för att beräkna värdena.`,
             {
               id:          "m_wet",
               name:        "Våtvikt",
-              symbol:      "m_{wet}",
               unit:        "g",
               description: "Ursprunglig massa av det otorkade provet",
               //placeholder: 100,
-              min:         0.001
+              min: 0,
+              step: 1,
+              decimals: 2
             },
             {
               id:          "m_dry",
-              name:        "Torrmassa",
-              symbol:      "m_{dry}",
+              name:        "Torrvikt",
               unit:        "g",
               description: "Provets massa efter torkning vid 105°C i 24 h",
               //placeholder: 18,
-              min:         0
+              min:         0,
+              step: 1,
+              decimals: 2
             },
             {
               id:          "m_ash",
-              name:        "Askmassa",
-              symbol:      "m_{ash}",
+              name:        "Askvikt",
               unit:        "g",
               description: "Massa kvar efter glödgning vid 550°C i 4 h",
               //placeholder: 2,
-              min:         0
+              min:         0,
+              step: 0.1,
+              decimals: 3
             },
           ],
 
@@ -142,22 +150,22 @@ Ange de tre massorna nedan för att beräkna värdena.`,
               intro: `Torrsubstans (Total Solids, TS) är den del av substratet som återstår efter att
 allt vatten har torkats bort. Den bestäms genom att väga ett prov före och efter torkning vid 105°C i 24 timmar.`,
 
-              formula_latex:   "TS\\,(\\%) = \\frac{m_{dry}}{m_{wet}} \\times 100",
-              formula_filled:  "TS = ({m_dry} g ÷ {m_wet} g) × 100",
+              formula_latex:   "TS\\,(\\%) = \\frac{m_{torr}}{m_{våt}} \\times 100",
+              formula_filled:  "TS = ({m_torr} g ÷ {m_våt} g) × 100",
               formula_calc:    "m_dry / m_wet * 100",
 
               result_symbol:   "TS",   // injiceras även som variabeln "TS" för delekvationer nedan
               result_unit:     "%",
               result_decimals: 1,
 
-              typical_range: {
-                min:         3,
-                max:         35,
+              typical_range: /*{
+                min:         5,
+                max:         20,
                 unit:        "%",
-                low_text:    "Mycket lågt TS — detta är ett extremt utspätt substrat, liknande flytande gödsel eller processvatten. Pump- och uppvärmningskostnader blir höga i förhållande till biogasutbytet.",
-                normal_text: "TS är inom det typiska intervallet för vanliga biogassubstrat (flytgödsel, matavfall, energigrödor).",
+                low_text:    "Mycket lågt TS, typiskt för exempelvis flytgödsel.",
+                normal_text: "",
                 high_text:   "Högt TS — substratet är relativt torrt (t.ex. halm, torkat gödsel). Vanlig våtrötning kan vara svår; överväg förspädning eller torrötning."
-              },
+              }*/ null, 
 
               educational_text: `Total Solids (TS) är en av de mest grundläggande karakteriseringsparametrarna
 inom biogasteknik. Eftersom biogasanläggningar typiskt hanterar substrat med
@@ -180,14 +188,14 @@ TS alltid anges på färskviktsbasis (FM, Fresh Matter), enligt denna ekvation.`
             // Delekvation 2: Volatile Solids
             {
               id:    "vs",
-              title: "Volatile Solids (VS)",
+              title: "Glödförlust (Volatile Solids, VS)",
               intro: `Volatile Solids (VS) representerar den organiska fraktionen av
 torrsubstansen — den del som i princip kan brytas ned av mikroorganismer
 för att producera biogas. Askan som återstår efter glödgning vid 550 °C
 är den oorganiska (mineraliska) fraktionen.`,
 
-              formula_latex:   "VS\\,(\\%) = \\frac{m_{dry} - m_{ash}}{m_{wet}} \\times 100",
-              formula_filled:  "VS = (({m_dry} g − {m_ash} g) ÷ {m_wet} g) × 100",
+              formula_latex:   "VS\\,(\\%) = \\frac{m_{torr} - m_{aska}}{m_{våt}} \\times 100",
+              formula_filled:  "VS = (({m_torr} g − {m_aska} g) ÷ {m_våt} g) × 100",
               formula_calc:    "(m_dry - m_ash) / m_wet * 100",
 
               result_symbol:   "VS",   // injiceras även som variabeln "VS" för VS/TS nedan
@@ -203,45 +211,44 @@ för att producera biogas. Askan som återstår efter glödgning vid 550 °C
                 high_text:   "Mycket högt VS — substratet är både torrt och starkt organiskt. Utmärkt biogaspotential per kg färskvikt."
               },
 
-              educational_text: `Volatile Solids (VS) är den viktigaste indikatorn på biogaspotential.
+              educational_text: `Volatile Solids (VS) är den viktigaste parametern för att bedöma biogaspotential.
 Endast den organiska fraktionen av ett substrat kan omvandlas till biogas
-av anaeroba mikroorganismer; den mineraliska fraktionen (sand, salter, aska)
+av anaeroba mikroorganismer; den mineraliska fraktionen (sand, salter, etc.)
 passerar reaktorn oförändrad och ansamlas som fasta ämnen i rötresten.
 
-I praktiken anges det specifika metanutbytet för ett substrat (uppmätt i
-laboratoriska batchförsök kallade BMP-tester, Biochemical Methane Potential)
+Det specifika metanutbytet för ett substrat (uppmätt i
+så kallade BMP-tester, Biochemical Methane Potential)
 alltid per kg VS som tillsatts, inte per kg TS eller per kg färskvikt.
 Detta möjliggör rättvis jämförelse mellan substrat med olika fukt- och
 askhalter.`
             },
 
-            // Delekvation 3: VS/TS-kvot (använder TS och VS från ovan — inga extra indata behövs)
+            // Delekvation 3: VS/TS-kvot
             {
               id:    "vsts",
-              title: "VS/TS-kvot",
-              intro: `VS/TS-kvoten anger vilken andel av torrsubstansen som är organisk.
-Den beräknas automatiskt från TS- och VS-värdena ovan — inga ytterligare
-indata behövs.`,
+              title: "VS (% av TS)",
+              intro: `VS som % av TS anger vilken andel av torrsubstansen som är organisk.
+Den beräknas automatiskt från TS- och VS-värdena ovan.`,
 
               formula_latex:   "\\frac{VS}{TS}\\,(\\%) = \\frac{VS}{TS} \\times 100",
               // {TS} och {VS} substitueras från de beräknade resultaten ovan
               formula_filled:  "VS/TS = ({VS}% ÷ {TS}%) × 100",
-              formula_calc:    "VS / TS * 100",   // TS och VS injiceras automatiskt från ovan
+              formula_calc:    "VS / TS * 100",
 
               result_symbol:   "VS_TS",
               result_unit:     "%",
               result_decimals: 1,
 
-              typical_range: {
+              typical_range: null /*{
                 min:         60,
                 max:         95,
                 unit:        "%",
                 low_text:    "Lågt VS/TS — stor mineralfraktion. Vanligt i rötrest, mineralkontaminerade substrat eller material med hög sand-/jordhalt. Metanutbytet per kg färskvikt blir lågt.",
                 normal_text: "VS/TS-kvoten är inom det typiska intervallet för organiska biogassubstrat.",
                 high_text:   "Mycket högt VS/TS — nästan helt organisk torrsubstans. Utmärkt substratkvalitet för biogasproduktion."
-              },
+              }*/,
 
-              educational_text: `VS/TS-kvoten är ett av de enklaste och mest användbara talen vid
+              educational_text: `VS som % av TS är ett av de enklaste och mest användbara talen vid
 substratkvalificering. Typiska värden sträcker sig från ungefär 60 % för
 rötrest eller jordförorenade material upp till 95 % för rena energigrödor
 som majsensilage eller odlade gräs.
@@ -260,82 +267,17 @@ värde över 100 %, kontrollera laboratoriemätningarna — askmassan kan inte
         },
 
         // -------------------------------------------------------
-        // Organic Loading Rate (OLR)
-        // -------------------------------------------------------
-        {
-          id: "olr",
-          title: "Organic Loading Rate (OLR)",
-          intro: `Organic Loading Rate (OLR) beskriver hur mycket Volatile Solids (organiskt
-material) som matas in i rötkammaren per enhet reaktorvolym per dag. Det är
-den viktigaste parametern för att styra hur hårt det mikrobiella samhället
-belastas — ett för högt OLR kan leda till processobalans.`,
-
-          formula_latex:   "OLR = \\frac{\\dot{m}_{VS}}{V_R}",
-          formula_filled:  "OLR = {m_vs_day} kg VS/d ÷ {v_reactor} m³",
-          formula_calc:    "m_vs_day / v_reactor",
-
-          result_symbol:   "OLR",
-          result_unit:     "kg VS / (m³·d)",
-          result_decimals: 2,
-
-          parameters: [
-            {
-              id:          "m_vs_day",
-              name:        "Daglig VS-inmatning",
-              symbol:      "\\dot{m}_{VS}",
-              unit:        "kg VS/d",
-              description: "Massa Volatile Solids som matas in i reaktorn per dag",
-              placeholder: 150,
-              min:         0
-            },
-            {
-              id:          "v_reactor",
-              name:        "Reaktorvolym",
-              symbol:      "V_R",
-              unit:        "m³",
-              description: "Aktiv (flytande) volym i rötkammaren",
-              placeholder: 500,
-              min:         0.001
-            }
-          ],
-
-          typical_range: {
-            min:         1.0,
-            max:         4.0,
-            unit:        "kg VS/(m³·d)",
-            low_text:    "OLR är lågt — reaktorn är underlastad. Detta är stabilt men den tillgängliga reaktorvolymen utnyttjas inte effektivt. Överväg att öka matningshastigheten.",
-            normal_text: "OLR är inom det typiska driftsintervallet för en CSTR (Continuously Stirred Tank Reactor) som behandlar lantbrukssubstrat.",
-            high_text:   "OLR är högt — reaktorn är hårt belastad. Det finns risk för processförsurning (ackumulering av flyktiga fettsyror, VFA). Övervaka pH och VFA-koncentrationer noga."
-          },
-
-          educational_text: `Organic Loading Rate (OLR) är utan tvekan den viktigaste driftsparametern
-för en biogasanläggning. Den definierar förhållandet mellan mängden inmatat
-substrat och reaktorns storlek.
-
-För en väl etablerad mesofil CSTR (Continuously Stirred Tank Reactor) som
-behandlar lantbrukssubstrat (gödsel, energigrödor) uppnås stabil drift
-typiskt mellan 1,5 och 3,5 kg VS/(m³·d). Över 4–5 kg VS/(m³·d) ackumuleras
-flyktiga fettsyror (VFA, Volatile Fatty Acids) ofta snabbare än metanogenerna
-kan förbruka dem, vilket leder till pH-sänkning och potentiellt processhaveri.
-
-OLR hänger nära samman med Hydraulic Retention Time (HRT): om du känner till
-HRT och VS-koncentrationen i inmatningen kan du beräkna OLR, och omvänt.
-Båda parametrarna måste beaktas tillsammans vid dimensionering eller
-felsökning av en anläggning.`
-        },
-
-        // -------------------------------------------------------
         // Hydraulic Retention Time (HRT)
         // -------------------------------------------------------
         {
           id: "hrt",
-          title: "Hydraulic Retention Time (HRT)",
-          intro: `Hydraulic Retention Time (HRT) är den genomsnittliga tid som material
-uppehåller sig inne i rötkammaren innan det avlägsnas som rötrest. Den
-avgör hur fullständigt substratet bryts ned och därmed hur mycket biogas
-som produceras per enhet inmatat substrat.`,
+          title: "Retentionstid (Hydraulic Retention Time, HRT)",
+          intro: `Retentionstiden är den genomsnittliga tid som material
+uppehåller sig inne i rötkammaren innan det avlägsnas som rötrest. En
+längre retentionstid gör att materialet får längre tid för att brytas ned.
+HRT anges i dygn.`,
 
-          formula_latex:   "HRT = \\frac{V_R}{\\dot{V}_{feed}}",
+          formula_latex:   "HRT = \\frac{V_{reaktor}}{V_{inmatat\\ substrat}}",
           formula_filled:  "HRT = {v_reactor} m³ ÷ {q_feed} m³/d",
           formula_calc:    "v_reactor / q_feed",
 
@@ -347,20 +289,22 @@ som produceras per enhet inmatat substrat.`,
             {
               id:          "v_reactor",
               name:        "Reaktorvolym",
-              symbol:      "V_R",
               unit:        "m³",
-              description: "Aktiv (flytande) volym i rötkammaren",
-              placeholder: 500,
-              min:         0.001
+              description: "Aktiv volym i rötkammaren",
+              //placeholder: 500,
+              min: 0,
+              step: 10,
+              decimals: 0
             },
             {
               id:          "q_feed",
               name:        "Daglig matningsvolym",
-              symbol:      "\\dot{V}_{feed}",
               unit:        "m³/d",
               description: "Volym substrat som tillsätts reaktorn per dag",
-              placeholder: 25,
-              min:         0.001
+              //placeholder: 25,
+              min: 0,
+              step: 5,
+              decimals: 0
             }
           ],
 
@@ -368,167 +312,235 @@ som produceras per enhet inmatat substrat.`,
             min:         15,
             max:         40,
             unit:        "dygn",
-            low_text:    "Kort HRT — material passerar snabbt genom rötkammaren. Substratnedbrytningen blir ofullständig och det finns risk att långsamväxande metanogener tvättas ut. Överväg att minska matningshastigheten eller öka reaktorvolymen.",
-            normal_text: "HRT är inom det typiska intervallet för mesofila CSTR-biogasanläggningar.",
-            high_text:   "Långt HRT — materialet har lång uppehållstid, vilket gynnar hög nedbrytningseffektivitet. Den stora reaktorvolymen i förhållande till matningshastigheten kan dock tyda på underutnyttjad kapacitet."
+            low_text:    "Låg HRT. material passerar snabbt genom rötkammaren. Substratnedbrytningen blir ofullständig.",
+            normal_text: "HRT är inom det typiska intervallet.",
+            high_text:   "Hög HRT. materialet har lång uppehållstid, vilket gynnar hög nedbrytningseffektivitet. Reaktorn kan vara överdimensionerad för substratvolymen."
           },
 
-          educational_text: `Hydraulic Retention Time (HRT) är en grundläggande dimensioneringsparameter
-för varje kontinuerligt matad rötkammare. Den anger hur länge en vattenmolekyl
+          educational_text: `Retentionstiden är en grundläggande parameter
+för en kontinuerligt matad rötkammare. Den anger hur länge en vattenmolekyl
 (eller löst substrat) i genomsnitt uppehåller sig i reaktorn innan den lämnar
-med efflödet.
+med utflödet, men används ofta som ett mått på hur länge substratet i genomsnitt
+bryts ned i reaktorn.`
+        }, // Slut på HRT-delen
 
-För en enkel CSTR utan recirkulation är HRT lika med slamuppehållstiden
-(SRT, Sludge Retention Time) — den tid som mikroorganismerna tillbringar i
-reaktorn. Detta är viktigt eftersom de långsammast växande mikroorganismerna
-i den anaeroba nedbrytningskedjan (acetokiastiska metanogener) har en minsta
-fördelningstid på ungefär 5–7 dygn. Om HRT sjunker under detta tröskelvärde
-tvättas metanogenerna ut snabbare än de kan reproducera sig, och processen
-kollapsar.
+        // -------------------------------------------------------
+        // Organic Loading Rate (OLR) — grupp med två beräkningsvägar
+        // -------------------------------------------------------
+        {
+          id: "olr",
+          title: "Organisk belastning (Organic Loading Rate, OLR)",
+          intro: `Den organiska belastningen beskriver hur mycket VS (organiskt
+material) som matas in i rötkammaren per enhet reaktorvolym per dag. Det är
+den viktigaste parametern för att styra hur hårt processen
+belastas. OLR anges typiskt i kg VS per m³ per dygn.
 
-I praktiken drivs mesofila anläggningar (35 °C) typiskt vid HRT på 20–30 dygn,
-medan termofila anläggningar (55 °C) kan drivas vid kortare HRT på 10–20 dygn
-eftersom de mikrobiella tillväxthastigheterna är högre vid högre temperaturer.`
-        }
+OLR kan beräknas på två ekvivalenta sätt som visas nedan. Fyll i alla
+parametrar för att se båda beräkningarna.`,
+
+          // Delade indata för båda beräkningsvägarna
+          parameters: [
+            {
+              id:          "m_wet_substrate",
+              name:        "Våtvikt per dag",
+              unit:        "ton",
+              description: "Mängd substrat som matas in i reaktorn per dag",
+              //placeholder: 150,
+              min: 0,
+              step: 5,
+              decimals: 0
+            },
+            {
+              id:          "vs_percentage",
+              name:        "VS-halt substrat",
+              unit:        "%",
+              description: "Procentandel VS i det inmatade substratet (av våtvikt)",
+              //placeholder: 15,
+              min: 0,
+              step: 1,
+              decimals: 1
+            },
+            {
+              id:          "v_reactor",
+              name:        "Reaktorvolym",
+              unit:        "m³",
+              description: "Aktiv (flytande) volym i rötkammaren",
+              //placeholder: 500,
+              min:         0.001
+            },
+            {
+              id:          "hrt_olr",
+              name:        "HRT",
+              unit:        "dygn",
+              description: "Hydraulisk retentionstid",
+              //placeholder: 20,
+              min:         0.1,
+              step:        1,
+              decimals:    1
+            }
+          ],
+
+          equations: [
+
+            // Beräkningsväg 1: via inmatat flöde och reaktorvolym
+            {
+              id:    "olr_mass",
+              title: "Via inmatat flöde och reaktorvolym",
+              intro: `Den klassiska definitionen: inmatad VS-massa per dygn dividerat med reaktorvolymen.`,
+
+              formula_latex:   "OLR = \\frac{\\dot{m}_{våt} \\times VS\\,(\\%)}{V_R} \\times 10",
+              formula_filled:  "OLR = {m_wet_substrate} ton/d × {vs_percentage} % ÷ {v_reactor} m³ × 10",
+              formula_calc:    "m_wet_substrate * vs_percentage / 100 / v_reactor * 1000",
+
+              result_symbol:   "OLR",
+              result_unit:     "kg VS / (m³·d)",
+              result_decimals: 2,
+
+              typical_range: {
+                min:         1.0,
+                max:         4.0,
+                unit:        "kg VS/(m³·d)",
+                low_text:    "Reaktorn är lågt belastad, vilket kan innebära att den tillgängliga reaktorvolymen inte utnyttjas effektivt.",
+                normal_text: "OLR är inom det typiska driftsintervallet.",
+                high_text:   "Reaktorn är hårt belastad. Det finns risk för störning pga. ackumulering av flyktiga fettsyror, VFA."
+              },
+
+              educational_text: `Den organiska belastningen är en mycket viktig parameter
+för en biogasanläggning. Den definierar förhållandet mellan mängden inmatat
+substrat och reaktorns storlek.
+
+Här kunde man skriva något om olika typiska värden.`
+            },
+
+            // Beräkningsväg 2: via VS-halt och HRT
+            {
+              id:    "olr_hrt",
+              title: "Via VS-halt substrat och HRT",
+              intro: `OLR kan även beräknas direkt från substratets VS-halt och
+retentionstid, under antagandet att substratets densitet är
+ungefär 1 000 kg/m³. (Nu blir det multiplicerat med 10 eftersom vi anger VS i %... så det är 100 i nämnaren och 1000 i täljaren. Vet inte om man borde förklara det eller skriva ut ekvationen i två steg?).`,
+
+              formula_latex:   "OLR = \\frac{VS\\,(\\%) \\times 10}{HRT}",
+              formula_filled:  "OLR = {vs_percentage} % × 10 ÷ {hrt_olr} d",
+              formula_calc:    "vs_percentage * 10 / hrt_olr",
+
+              result_symbol:   "OLR_HRT",
+              result_unit:     "kg VS / (m³·d)",
+              result_decimals: 2,
+
+              typical_range: {
+                min:         1.0,
+                max:         4.0,
+                unit:        "kg VS/(m³·d)",
+                low_text:    "OLR är lågt — reaktorn är underlastad.",
+                normal_text: "OLR är inom det typiska driftsintervallet för en CSTR som behandlar lantbrukssubstrat.",
+                high_text:   "OLR är högt — reaktorn är hårt belastad. Risk för VFA-ackumulering och processstörningar."
+              },
+
+              educational_text: `Denna beräkningsväg utgår från att OLR = c_VS / HRT, där c_VS är
+VS-koncentrationen i substratet (kg VS per m³). Eftersom HRT = V_R / Q
+gäller att Q / V_R = 1 / HRT, och därmed:
+
+OLR = Q × c_VS / V_R = c_VS / HRT
+
+Med VS-halt i procent och substratdensiteten ≈ 1 000 kg/m³ blir
+c_VS = VS% / 100 × 1 000 = VS% × 10 kg/m³, vilket ger faktorn × 10 i
+formeln (ekvivalent med VS-halt [som decimal] × 1 000 / HRT).
+
+De två beräkningsvägarna ger samma resultat när HRT är konsekvent med
+reaktorvolymen och flödet (dvs. när substratdensiteten faktiskt är
+≈ 1 000 kg/m³). Avvikelse mellan värdena kan indikera att ett av
+antagandena inte stämmer.`
+            }
+
+          ] // slut på OLR-ekvationer
+        },
+
 
       ] // slut på ekvationer: Flik 1
     }, // slut på Flik 1
 
     // ========================================================
-    // FLIK 2 — Processstabilitetsparametrar
+    // FLIK 2 — Kväve
     // ========================================================
     {
-      id: "process-stability",
-      title: "Processstabilitet",
-      intro: `En välmående anaerob rötkammare upprätthåller en noggrann balans mellan
-de olika mikrobiella samhällen som är inblandade. Detta avsnitt behandlar
-de parametrar som används för att bedöma och övervaka processstabiliteten:
-pH, temperatur och fri ammoniak (NH₃). Störningar i någon av dessa kan
-snabbt leda till processhaveri om de inte åtgärdas.`,
+      id: "nitrogen",
+      title: "Kväve",
+      intro: `Kväve är en viktig näring för mikroorganismer i biogasanläggningar. 
+Kväve används för att syntetisera protein och DNA, och påverkar därmed mikrobernas tillväxt och aktivitet. 
+För mycket kväve kan dock vara toxiskt för vissa mikroorganismer, vilket kan leda till störningar i processen.
+
+Läs mer i handboken s. 76–79.`,
 
       equations: [
 
         // -------------------------------------------------------
-        // Fri ammoniak (NH₃)
+        // TAN & fri ammoniak (NH₃) — grupp med pKa-korrigering först
         // -------------------------------------------------------
         {
-          id: "nh3",
-          title: "Fri ammoniak (NH₃)",
-          intro: `Total Ammonia Nitrogen (TAN) i rötresten finns i två former: joniserat
-ammonium (NH₄⁺) och ojoniserad fri ammoniak (NH₃). Endast fri ammoniak är
-direkt hämmande för metanogena arkéer. Den andel av TAN som existerar som
-fri NH₃ beror på både pH och temperatur, vilket är anledningen till att
-detta jämviktsläge är så kritiskt att övervaka.`,
+          id: "ammonia-group",
+          title: "Total Ammonia Nitrogen (TAN) och fri ammoniak (NH₃)",
+          intro: `Den totala mängden ammoniumkväve (Total Ammonia Nitrogen, TAN) i reaktorn
+finns i två former: ammonium (NH₄⁺) och ojoniserad s.k. fri ammoniak (NH₃).
+Den fria ammoniaken är direkt hämmande för mikroorganismer. Andelen NH₃ av
+TAN beror på pH och temperatur — och eftersom pKa själv är temperaturberoende
+beräknas den i steget nedan, varefter NH₃-halten beräknas automatiskt.`,
 
-          formula_latex:   "NH_3\\,(\\text{mg/L}) = TAN \\times \\frac{1}{1 + 10^{\\,pK_a - pH}}",
-          formula_filled:  "NH₃ = {tan} mg/L × 1 ÷ (1 + 10^({pka} − {pH}))",
-          formula_calc:    "tan / (1 + Math.pow(10, pka - pH))",
-
-          result_symbol:   "NH₃",
-          result_unit:     "mg N/L",
-          result_decimals: 0,
-
+          // Delade indata — anges en gång, används av båda delekvationerna
           parameters: [
+            {
+              id:          "T_celsius",
+              name:        "Temperatur",
+              unit:        "°C",
+              description: "Processens driftstemperatur",
+              //placeholder: 37,
+              min:         0
+            },
             {
               id:          "tan",
               name:        "Total Ammonia Nitrogen (TAN)",
-              symbol:      "TAN",
               unit:        "mg N/L",
               description: "Totalt ammoniumkväve uppmätt i rötresten",
-              placeholder: 3000,
+              //placeholder: 3000,
               min:         0
             },
             {
               id:          "pH",
               name:        "pH",
-              symbol:      "pH",
-              unit:        "—",
-              description: "pH i rötresten (typiskt 7,0–8,5 i stabila biogasanläggningar)",
-              placeholder: 7.8,
-              min:         0
-            },
-            {
-              id:          "pka",
-              name:        "pKa för ammonium",
-              symbol:      "pK_a",
-              unit:        "—",
-              description: "Syradissociationskonstant för NH₄⁺ (se temperaturkorrigering nedan)",
-              placeholder: 9.25,
+              unit:        "",
+              description: "pH i reaktorn",
+              //placeholder: 7.8,
               min:         0
             }
           ],
 
-          typical_range: {
-            min:         0,
-            max:         400,
-            unit:        "mg N/L",
-            low_text:    "Fri ammoniak är mycket låg — ingen hämning av metanogenesen förväntas.",
-            normal_text: "Fri ammoniak understiger vanligen citerade hämningsgränser. De flesta metanogener tolererar upp till 150–400 mg NH₃-N/L utan signifikant hämning.",
-            high_text:   "Fri ammoniak överstiger 400 mg N/L — signifikant hämning av acetokiastiska metanogener är trolig. Överväg att minska kväveinput, späda ut rötresten eller använda struvitfällning för att sänka TAN."
-          },
+          equations: [
 
-          educational_text: `Hämning från fri ammoniak är en av de vanligaste orsakerna till
-processobalans i biogasanläggningar som tar emot kvävrika substrat som
-grisflytgödsel, fjäderfägödsel eller matavfall.
-
-Jämvikten mellan NH₃ och NH₄⁺ styrs av Henderson–Hasselbalch-kemin. Vid
-de pH-värden som är typiska för anaeroba rötkammare (7,5–8,2) existerar
-endast en liten fraktion av TAN som fri NH₃ — men även denna lilla fraktion
-kan vara betydelsefull om TAN-koncentrationerna är höga (t.ex.
-4 000–8 000 mg N/L).
-
-pKa för systemet NH₄⁺/NH₃ är ungefär 9,25 vid 25 °C men minskar med
-stigande temperatur. Vid 35 °C (mesofilt) är pKa ≈ 9,09; vid 55 °C
-(termofilt) är pKa ≈ 8,60. Använd temperaturkorrigeringsformeln nedan för
-att beräkna rätt pKa för din processtemperatur.
-
-Rapporterade hämningsgränser varierar kraftigt mellan studier
-(150–1 500 mg NH₃-N/L), delvis eftersom de mikrobiella samhällena kan
-anpassa sig till förhöjda ammoniak­koncentrationer över tid. Ändå ger
-konsekvent övervakning av fri ammoniak en tidig varning om potentiell
-hämning, länge innan biogasutbytet minskar märkbart.`
-        },
-
-        // -------------------------------------------------------
-        // pKa-temperaturkorrigering
-        // -------------------------------------------------------
-        {
-          id: "pka-temp",
-          title: "pKa-temperaturkorrigering",
-          intro: `Syradissociationskonstanten (pKa) för ammonium–ammoniak-jämvikten förändras
-med temperaturen. Denna ekvation låter dig beräkna rätt pKa att använda i
-beräkningen av fri ammoniak ovan, givet din rötkammares driftstemperatur.`,
-
-          formula_latex:   "pK_a(T) = 0.09018 + \\frac{2729.92}{T + 273.15}",
-          formula_filled:  "pKa = 0.09018 + 2729.92 ÷ ({T_celsius} + 273.15)",
-          formula_calc:    "0.09018 + 2729.92 / (T_celsius + 273.15)",
-
-          result_symbol:   "pKa",
-          result_unit:     "—",
-          result_decimals: 3,
-
-          parameters: [
+            // Delekvation 1: pKa-temperaturkorrigering
             {
-              id:          "T_celsius",
-              name:        "Temperatur",
-              symbol:      "T",
-              unit:        "°C",
-              description: "Rötkammarens driftstemperatur",
-              placeholder: 37,
-              min:         0
-            }
-          ],
+              id: "pka-temp",
+              title: "pKa-temperaturkorrigering",
+              intro: `Syradissociationskonstanten (pKa) för ammonium–ammoniak-jämvikten anger hur stor andel av ammoniumkvävet som är i joniserad resp. ojoniserad form. pKa minskar
+med stigande temperatur. Vi måste beräkna pKa för att kunna beräkna fri ammoniak.`,
 
-          typical_range: {
-            min:         8.50,
-            max:         9.30,
-            unit:        "—",
-            low_text:    "Mycket hög temperatur (termofilt eller däröver). Vid lägre pKa existerar en större andel av TAN som hämmande fri NH₃.",
-            normal_text: "pKa är inom det förväntade intervallet för mesofil (35 °C) till termofil (55 °C) rötning.",
-            high_text:   "Låg temperatur — pKa är högt, vilket innebär att en mindre andel av TAN existerar som fri NH₃. Psykrofil rötning eller rötning vid omgivningstemperatur."
-          },
+              formula_latex:   "pK_a = 0.09018 + \\frac{2729.92}{T + 273.15}",
+              formula_filled:  "pKa = 0.09018 + 2729.92 ÷ ({T_celsius} + 273.15)",
+              formula_calc:    "0.09018 + 2729.92 / (T_celsius + 273.15)",
 
-          educational_text: `pKa för ammoniumjonen varierar med temperaturen enligt van't Hoff-ekvationen.
+              result_symbol:   "pKa",
+              result_unit:     "",
+              result_decimals: 3,
+
+              typical_range: {
+                min:         8.50,
+                max:         9.30,
+                unit:        "—",
+                low_text:    "Mycket hög temperatur (termofilt eller däröver). Vid lägre pKa existerar en större andel av TAN som hämmande fri NH₃.",
+                normal_text: "pKa är inom det förväntade intervallet för mesofil (35 °C) till termofil (55 °C) rötning.",
+                high_text:   "Låg temperatur — pKa är högt, vilket innebär att en mindre andel av TAN existerar som fri NH₃. Psykrofil rötning eller rötning vid omgivningstemperatur."
+              },
+
+              educational_text: `pKa för ammoniumjonen varierar med temperaturen enligt van't Hoff-ekvationen.
 Formeln som används här (Emerson m.fl., 1975) är välciterad i vatten- och
 avloppsbehandlingslitteraturen och ger noggranna resultat i det temperatur­
 intervall som är relevant för biogasanläggningar (15–60 °C).
@@ -537,11 +549,123 @@ Referensvärden:
   25 °C → pKa ≈ 9,25
   35 °C → pKa ≈ 9,09
   37 °C → pKa ≈ 9,06
-  55 °C → pKa ≈ 8,60
+  55 °C → pKa ≈ 8,60`
+            },
 
-Använd pKa-värdet från denna ekvation som indata till beräkningen av fri
-ammoniak ovan för att få en temperaturkorrigerad uppskattning av hämmande
-fri ammoniak.`
+            // Delekvation 2: Fri ammoniak (NH₃) — använder pKa från ovan
+            {
+              id: "nh3",
+              title: "Fri ammoniak (NH₃)",
+              intro: `Med pKa beräknat ovan och uppmätt TAN och pH kan nu andelen fri ammoniak beräknas.`,
+
+              formula_latex:   "NH_3\\,(\\text{mg/L}) = \\frac{TAN}{1 + 10^{\\,pK_a - pH}}",
+              formula_filled:  "NH₃ = {tan} mg/L ÷ (1 + 10^({pKa} − {pH}))",
+              formula_calc:    "tan / (1 + Math.pow(10, pKa - pH))",
+
+              result_symbol:   "NH₃",
+              result_unit:     "mg N/L",
+              result_decimals: 0,
+
+              typical_range: {
+                min:         0,
+                max:         400,
+                unit:        "mg N/L",
+                low_text:    "",
+                normal_text: "Fri ammoniak inom normalspannet. Låg risk för processtörningar.",
+                high_text:   "Hög nivå av fri ammoniak. Detta kan leda till störning i processen."
+              },
+
+              educational_text: `Hämning från fri ammoniak är en av de vanligaste orsakerna till
+processobalans i biogasanläggningar som tar emot kväverika substrat som hönsgödsel och slaktavfall (chansar här).
+
+Här kan man skriva något mer säkert.`
+            }
+
+          ] // slut på delekvationer för ammoniakgruppen
+        },
+
+        // -------------------------------------------------------
+        // Kvävemineralisering
+        // -------------------------------------------------------
+        {
+          id: "n-mineralization",
+          title: "Kvävemineralisering (ML)",
+          intro: `Under rötningsprocessen omvandlas en del av det organiska kvävet i substratet
+till ammoniumkväve (NH₄⁺-N) — en process som kallas kvävemineralisering. Graden
+av mineralisering anger hur stor andel av substratets organiska kväve som
+frigjorts som ammonium i rötresten. Detta är viktigt för att förstå rötresten
+som gödselmedel, eftersom mineraliserat kväve är direkt växttillgängligt.`,
+
+          formula_latex:   "ML\\,(\\%) = \\frac{NH_4^+\\text{-}N_{rötrest} - NH_4^+\\text{-}N_{substrat}}{\\text{Org-}N_{substrat}} \\times 100",
+          formula_filled:  "ML = ({tan_digestate} − {tan_substrate}) ÷ {org_n_substrate} × 100",
+          formula_calc:    "(tan_digestate - tan_substrate) / org_n_substrate * 100",
+
+          result_symbol:   "ML",
+          result_unit:     "%",
+          result_decimals: 1,
+
+          parameters: [
+            {
+              id:          "tan_digestate",
+              name:        "NH₄⁺-N i rötrest",
+              unit:        "mg N/kg våtvikt",
+              description: "",
+              min:         0,
+              step:        50,
+              decimals:    0
+            },
+            {
+              id:          "tan_substrate",
+              name:        "NH₄⁺-N i substrat",
+              unit:        "mg N/kg våtvikt",
+              description: "",
+              min:         0,
+              step:        10,
+              decimals:    0
+            },
+            {
+              id:          "org_n_substrate",
+              name:        "Organiskt kväve i substrat",
+              unit:        "mg N/kg våtvikt",
+              description: "",
+              min:         0.001,
+              step:        50,
+              decimals:    0
+            }
+          ],
+
+          typical_range: {
+            min:         20,
+            max:         60,
+            unit:        "%",
+            low_text:    "Låg mineralisering — en stor del av kvävet finns kvar i organisk form i rötresten. Kvävet är ännu inte växttillgängligt och kräver vidare nedbrytning i marken.",
+            normal_text: "Mineraliseringsgraden är inom det typiska intervallet för anaerob rötning av lantbrukssubstrat.",
+            high_text:   "Hög mineralisering — en stor andel av det organiska kvävet har omvandlats till ammonium. Rötresten har ett högt innehåll av direkt växttillgängligt kväve."
+          },
+
+          educational_text: `Kvävemineralisering under anaerob rötning är en central process för
+rötresten som biogödsel. När mikroorganismer bryter ned organiskt material
+(proteiner, nukleinsyror m.m.) frigörs kvävet som ammonium-NH₄⁺, vilket är
+den form av kväve som växter kan ta upp direkt.
+
+Organiskt kväve beräknas som skillnaden mellan totalkväve (TKN, Total
+Kjeldahl Nitrogen) och ammoniumkväve (NH₄⁺-N):
+
+  Org.-N = TKN − NH₄⁺-N
+
+Formeln mäter nettot av ammoniakfrigörelse under rötprocessen: ökningen av
+NH₄⁺-N från substrat till rötrest, satt i relation till substratets organiska
+kväveinnehåll.
+
+Typiska mineraliseringsgrader för vanliga lantbrukssubstrat:
+  Nötflytgödsel:      20–35 %
+  Grisflytgödsel:     30–50 %
+  Matavfall/slakteri: 40–60 %
+
+En hög mineralisering är fördelaktig ur gödslingsperspektiv men kan
+samtidigt öka risken för ammoniakavgång och potentiell hämning av
+biogasprocessen (se fri ammoniak ovan). Avvägningen mellan kvävefrigörelse
+och processstabilitet är viktig vid substratoptimering.`
         }
 
       ] // slut på ekvationer: Flik 2
