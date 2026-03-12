@@ -102,6 +102,13 @@ reactor on average before leaving with the effluent.`
 },
 ```
 
+## Example
+
+Here is a screenshot showing off some of the features of the interactive calculator.
+
+<img width="838" height="735" alt="image" src="https://github.com/user-attachments/assets/c405fd4d-a14f-4b7a-a4ab-1f57edd5a67b" />
+
+
 ## Writing KaTeX formulas
 
 KaTeX renders beautiful mathematical formulas. Quick reference:
