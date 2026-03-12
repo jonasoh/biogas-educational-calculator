@@ -267,6 +267,84 @@ värde över 100 %, kontrollera laboratoriemätningarna — askmassan kan inte
         },
 
         // -------------------------------------------------------
+        // Utrötningsgrad
+        // -------------------------------------------------------
+        {
+          id: "degradation-efficiency",
+          title: "Utrötningsgrad",
+          intro: `Utrötningsgraden anger hur stor del av det organiska materialet som gått in i
+processen som brutits ned och omvandlats till biogas. Det är skillnaden i
+organiskt innehåll mellan ingående och utgående material, angiven i procent.`,
+
+          formula_latex:   "E\\,(\\%) = \\left(1 - \\frac{TS_{utgående} \\times VS_{utgående}}{TS_{substrat} \\times VS_{substrat}}\\right) \\times 100",
+          formula_filled:  "E = (1 − ({ts_out} × {vs_out}) ÷ ({ts_in} × {vs_in})) × 100",
+          formula_calc:    "(1 - (ts_out * vs_out) / (ts_in * vs_in)) * 100",
+
+          result_symbol:   "E",
+          result_unit:     "%",
+          result_decimals: 1,
+
+          parameters: [
+            {
+              id:          "ts_in",
+              name:        "TS substrat (ingående)",
+              unit:        "%",
+              description: "TS-halt i substratet, % av våtvikt",
+              min:         0.001,
+              step:        1,
+              decimals:    1
+            },
+            {
+              id:          "vs_in",
+              name:        "VS substrat (ingående)",
+              unit:        "%",
+              description: "VS-halt i substratet, % av TS",
+              min:         0.001,
+              step:        1,
+              decimals:    1
+            },
+            {
+              id:          "ts_out",
+              name:        "TS rötrest (utgående)",
+              unit:        "%",
+              description: "TS-halt i rötresten, % av våtvikt",
+              min:         0,
+              step:        1,
+              decimals:    1
+            },
+            {
+              id:          "vs_out",
+              name:        "VS rötrest (utgående)",
+              unit:        "%",
+              description: "VS-halt i rötresten, % av TS",
+              min:         0,
+              step:        1,
+              decimals:    1
+            }
+          ],
+
+          /*typical_range: {
+            min:         40,
+            max:         70,
+            unit:        "%",
+            low_text:    "Låg utrötningsgrad — en stor del av det organiska materialet har inte brutits ned. Det kan tyda på kort retentionstid, låg temperatur eller substrat som är svårnedbrytbart.",
+            normal_text: "Utrötningsgraden är inom det typiska intervallet för anaerob rötning.",
+            high_text:   "Hög utrötningsgrad — en stor del av det organiska materialet har omvandlats till biogas. Kontrollera att beräkningsunderlagen är rimliga."
+          },*/
+
+          educational_text: `Utrötningsgraden är ett viktigt mått på hur effektivt rötkammaren bryter
+ned det organiska materialet. Typiska värden för välskötta anläggningar
+ligger mellan 40 och 70 %, beroende på substrat och driftbetingelser.
+Lättnedbrytbara substrat som matavfall och energigrödor ger ofta högre
+utrötningsgrad än exempelvis halm och fibröst material.
+
+Observera att formeln bygger på ett förenklat antagande om att volymen in
+och ut är densamma. I praktiken minskar volymen något till följd av
+gasbildningen, vilket innebär att den beräknade utrötningsgraden är en
+något underskattning av den verkliga nedbrytningen.`
+        },
+
+        // -------------------------------------------------------
         // Hydraulic Retention Time (HRT)
         // -------------------------------------------------------
         {
@@ -375,7 +453,7 @@ OLR kan beräknas på två ekvivalenta sätt som visas nedan.`,
                 }
               ],
 
-              formula_latex:   "OLR = \\frac{\\dot{m}_{våt} \\times VS\\,(\\%)}{V_R} \\times 10",
+              formula_latex:   "OLR = \\frac{m_{våt} \\times VS\\,(\\%)}{V_R} \\times 10",
               formula_filled:  "OLR = {m_wet_substrate} ton/d × {vs_percentage} % ÷ {v_reactor} m³ × 10",
               formula_calc:    "m_wet_substrate * vs_percentage / 100 / v_reactor * 1000",
 
@@ -633,7 +711,136 @@ som gödselmedel, eftersom mineraliserat kväve är direkt växttillgängligt.`,
         }
 
       ] // slut på ekvationer: Flik 2
-    } // slut på Flik 2
+    }, // slut på Flik 2
+
+    // ========================================================
+    // FLIK 3 — Processutvärdering
+    // ========================================================
+    {
+      id: "process-evaluation",
+      title: "Processutvärdering",
+      intro: `Här beräknas nyckeltal för att utvärdera hur effektivt biogasanläggningen
+omvandlar substrat till metan. De två viktigaste måtten är den
+substratspecifika metanproduktionen (SMP) och den volumetriska
+metanproduktionen.`,
+
+      equations: [
+
+        // -------------------------------------------------------
+        // SMP — Substratspecifik metanproduktion
+        // -------------------------------------------------------
+        {
+          id: "smp",
+          title: "Specifik metanproduktion (SMP)",
+          intro: `SMP mäter hur mycket metan anläggningen producerar per enhet organiskt
+material (VS) som matas in.`,
+
+          formula_latex:   "SMP = \\frac{V_{CH_4}}{m_{våt} \\times VS\\,(\\%)} \\times 100",
+          formula_filled:  "SMP = {v_ch4} m³ CH₄ ÷ ({m_wet_smp} ton × {vs_smp} %) × 100",
+          formula_calc:    "v_ch4 / (m_wet_smp * vs_smp) * 100",
+
+          result_symbol:   "SMP",
+          result_unit:     "m³ CH₄/ton VS",
+          result_decimals: 0,
+
+          parameters: [
+            {
+              id:          "v_ch4",
+              name:        "Metanvolym",
+              unit:        "m³ CH₄",
+              description: "Uppmätt metanproduktion under perioden (normalt per dygn)",
+              min:         0,
+              step:        10,
+              decimals:    0
+            },
+            {
+              id:          "m_wet_smp",
+              name:        "Våtvikt per dag",
+              unit:        "ton",
+              description: "Mängd substrat som matas in under samma period",
+              min:         0.001,
+              step:        1,
+              decimals:    1
+            },
+            {
+              id:          "vs_smp",
+              name:        "VS-halt substrat",
+              unit:        "%",
+              description: "Procentandel VS i det inmatade substratet (av våtvikt)",
+              min:         0.001,
+              step:        1,
+              decimals:    1
+            }
+          ],
+
+          /*typical_range: {
+            min:         150,
+            max:         350,
+            unit:        "m³ CH₄/ton VS",
+            low_text:    "Lågt SMP-värde. Anläggningen utnyttjar substratet dåligt — möjliga orsaker är kort retentionstid, processstörning eller att ett svårnedbrytbart substrat används.",
+            normal_text: "SMP är inom det typiska intervallet för gårdsbiogasanläggningar.",
+            high_text:   "Högt SMP-värde. Substratet bryts ned effektivt, eller så matas ett lättnedbrytbart substrat med hög biogaspotential in."
+          },*/
+
+          educational_text: `…`
+        },
+
+        // -------------------------------------------------------
+        // MP_vol — Volumetrisk metanproduktion
+        // -------------------------------------------------------
+        {
+          id: "mp-vol",
+          title: "Volumetrisk metanproduktion",
+          intro: `Den volumetriska metanproduktionen anger hur mycket metan som
+produceras per kubikmeter aktiv reaktorvolym och dag.`,
+
+          formula_latex:   "MP_{vol} = \\frac{V_{CH_4}}{V_R}",
+          formula_filled:  "MP_vol = {v_ch4_daily} m³ CH₄/d ÷ {v_reactor} m³",
+          formula_calc:    "v_ch4_daily / v_reactor",
+
+          result_symbol:   "MP_vol",
+          result_unit:     "m³ CH₄/(m³·d)",
+          result_decimals: 2,
+
+          parameters: [
+            {
+              id:          "v_ch4_daily",
+              name:        "Daglig metanvolym",
+              unit:        "m³ CH₄/d",
+              description: "Uppmätt metanproduktion per dygn",
+              min:         0,
+              step:        10,
+              decimals:    0
+            },
+            {
+              id:          "v_reactor",
+              name:        "Aktiv reaktorvolym",
+              unit:        "m³",
+              description: "Flytande volym i rötkammaren",
+              min:         0.001,
+              step:        10,
+              decimals:    0
+            }
+          ],
+
+          /*typical_range: {
+            min:         0.3,
+            max:         1.5,
+            unit:        "m³ CH₄/(m³·d)",
+            low_text:    "Låg volumetrisk produktion. Reaktorutrymmet utnyttjas ineffektivt — reaktorn kan vara underdimensionerad i förhållande till biogaspotentialen, eller processen störs.",
+            normal_text: "MP_vol är inom det typiska intervallet för mesofila gårdsbiogasanläggningar.",
+            high_text:   "Hög volumetrisk produktion. Reaktorn belastas hårt — kontrollera att OLR och processtabilitet är godtagbara."
+          },*/
+
+          educational_text: `Den volumetriska metanproduktionen är ett praktiskt nyckeltal för att
+bedöma om reaktorn dimensionerats rätt i förhållande till tillgängligt
+substrat.
+
+…`
+        }
+
+      ] // slut på ekvationer: Flik 3
+    } // slut på Flik 3
 
   ] // slut på tabs
 
