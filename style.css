@@ -66,6 +66,16 @@ header {
   gap: 1rem;
 }
 
+.header-logo {
+  flex-shrink: 0;
+}
+
+.header-logo-img {
+  height: 128px;
+  width: auto;
+  display: block;
+}
+
 .header-main {
   text-align: center;
   flex: 1;
@@ -270,6 +280,11 @@ header .subtitle {
   display: flex;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+#tab-nav::-webkit-scrollbar {
+  display: none;
 }
 
 #tab-nav button {
@@ -546,10 +561,27 @@ main {
 /* Educational text */
 .educational-text {
   border-top: 1px solid var(--colour-border);
-  padding-top: 1rem;
-  font-size: 0.95rem;
-  line-height: 1.75;
+  margin-top: 1.25rem;
+  padding: 1rem 1.25rem 1rem 1.5rem;
+  border-left: 3px solid var(--colour-primary);
+  background: var(--colour-primary-lt);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-family: var(--font-body);
+  font-size: 0.93rem;
+  font-style: italic;
+  line-height: 1.8;
   color: var(--colour-text);
+}
+
+.educational-text-label {
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--colour-primary);
+  margin-bottom: 0.6rem;
 }
 
 .educational-text p + p {

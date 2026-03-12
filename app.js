@@ -188,17 +188,18 @@ function buildGroupCard(group) {
     body.appendChild(introEl);
   }
 
-  // Shared parameter inputs — pass updateGroup as the callback so the
-  // correct function fires on input; input IDs are namespaced to group.id
-  const inputsWrap = document.createElement("div");
-  inputsWrap.classList.add("group-inputs");
-  const grid = document.createElement("div");
-  grid.classList.add("parameters-grid");
-  group.parameters.forEach(param => {
-    grid.appendChild(buildParamField(param, group, () => updateGroup(group)));
-  });
-  inputsWrap.appendChild(grid);
-  body.appendChild(inputsWrap);
+  // Shared parameter inputs (only if group has shared parameters)
+  if (group.parameters && group.parameters.length > 0) {
+    const inputsWrap = document.createElement("div");
+    inputsWrap.classList.add("group-inputs");
+    const grid = document.createElement("div");
+    grid.classList.add("parameters-grid");
+    group.parameters.forEach(param => {
+      grid.appendChild(buildParamField(param, group, () => updateGroup(group)));
+    });
+    inputsWrap.appendChild(grid);
+    body.appendChild(inputsWrap);
+  }
 
   // Sub-equations — stacked, separated by dashed dividers
   group.equations.forEach((sub, idx) => {
@@ -224,6 +225,16 @@ function buildGroupCard(group) {
       subIntro.classList.add("equation-intro");
       subIntro.innerHTML = paragraphs(sub.intro);
       subEl.appendChild(subIntro);
+    }
+
+    // Sub-equation own parameters (if any)
+    if (sub.parameters && sub.parameters.length > 0) {
+      const subGrid = document.createElement("div");
+      subGrid.classList.add("parameters-grid");
+      sub.parameters.forEach(param => {
+        subGrid.appendChild(buildParamField(param, sub, () => updateGroup(group)));
+      });
+      subEl.appendChild(subGrid);
     }
 
     // Formula display (KaTeX)
@@ -259,36 +270,64 @@ function buildGroupCard(group) {
    ============================================================ */
 
 function updateGroup(group) {
-  // --- Step 1: collect and validate all shared parameter values ---
-  const valuePool = {};
-  let allValid = true;
+  // --- Step 1: collect and validate shared group parameters ---
+  const sharedPool = {};
+  let sharedValid = true;
 
-  group.parameters.forEach(param => {
-    const input = document.getElementById(`input-${group.id}-${param.id}`);
-    const raw   = input.value.trim();
-    const val   = parseFloat(raw);
+  if (group.parameters && group.parameters.length > 0) {
+    group.parameters.forEach(param => {
+      const input = document.getElementById(`input-${group.id}-${param.id}`);
+      const raw   = input.value.trim();
+      const val   = parseFloat(raw);
 
-    if (raw === "" || isNaN(val) || (param.min !== undefined && val < param.min)) {
-      allValid = false;
-      input.classList.toggle("invalid", raw !== "");
-    } else {
-      input.classList.remove("invalid");
-      valuePool[param.id] = val;
-    }
-  });
+      if (raw === "" || isNaN(val) || (param.min !== undefined && val < param.min)) {
+        sharedValid = false;
+        input.classList.toggle("invalid", raw !== "");
+      } else {
+        input.classList.remove("invalid");
+        sharedPool[param.id] = val;
+      }
+    });
+  }
 
   // If any shared input is missing/invalid, hide all sub-results and stop
-  if (!allValid) {
+  if (!sharedValid) {
     group.equations.forEach(sub => {
       document.getElementById(`result-section-${sub.id}`).hidden = true;
     });
     return;
   }
 
-  // --- Step 2: compute sub-equations in order, accumulating results ---
+  // --- Step 2: compute sub-equations, each with their own parameter pool ---
   group.equations.forEach(sub => {
-    const result = safeCalculate(sub.formula_calc, valuePool);
+    const valuePool = { ...sharedPool };
+    let subValid = true;
+
+    // Collect sub-equation-specific parameters (namespaced to sub.id)
+    if (sub.parameters && sub.parameters.length > 0) {
+      sub.parameters.forEach(param => {
+        const input = document.getElementById(`input-${sub.id}-${param.id}`);
+        const raw   = input.value.trim();
+        const val   = parseFloat(raw);
+
+        if (raw === "" || isNaN(val) || (param.min !== undefined && val < param.min)) {
+          subValid = false;
+          input.classList.toggle("invalid", raw !== "");
+        } else {
+          input.classList.remove("invalid");
+          valuePool[param.id] = val;
+        }
+      });
+    }
+
     const resultSection = document.getElementById(`result-section-${sub.id}`);
+
+    if (!subValid) {
+      resultSection.hidden = true;
+      return;
+    }
+
+    const result = safeCalculate(sub.formula_calc, valuePool);
 
     if (result === null || !isFinite(result)) {
       resultSection.hidden = true;
@@ -305,8 +344,8 @@ function updateGroup(group) {
       fillTemplate(sub.formula_filled, valuePool);
     updateRangeIndicator(sub, result);
 
-    // Inject this result into the pool so subsequent sub-equations can use it
-    valuePool[sub.result_symbol] = result;
+    // Inject result into shared pool so subsequent sub-equations can use it
+    sharedPool[sub.result_symbol] = result;
   });
 }
 
@@ -349,7 +388,7 @@ function buildParamField(param, eq, updateCallback) {
 
   const desc = document.createElement("span");
   desc.classList.add("param-desc");
-  desc.textContent = param.description;
+  desc.innerHTML = param.description;
 
   input.addEventListener("input", updateCallback || (() => updateEquation(eq)));
 
@@ -373,9 +412,11 @@ function buildResultHTML(eq) {
       <span class="result-unit">${escapeHtml(eq.result_unit)}</span>
     </div>
     <div class="range-indicator" id="range-indicator-${eq.id}" hidden></div>
+    ${eq.educational_text ? `
     <div class="educational-text" id="edu-text-${eq.id}">
+      <div class="educational-text-label">📖 Fördjupning</div>
       ${paragraphs(eq.educational_text)}
-    </div>
+    </div>` : ''}
   `;
 }
 
@@ -499,9 +540,15 @@ function updateRangeIndicator(eq, result) {
     text  = normal_text;
   }
 
+  const rangeHint = result < min
+    ? `< ${min} ${escapeHtml(unit)}`
+    : result > max
+      ? `> ${max} ${escapeHtml(unit)}`
+      : `${min}–${max} ${escapeHtml(unit)}`;
+
   el.classList.add(cls);
   el.innerHTML = `<span class="range-label">${label}
-    (${min}–${max} ${escapeHtml(unit)}):</span> ${escapeHtml(text)}`;
+    (${rangeHint}):</span> ${escapeHtml(text)}`;
 }
 
 /* ============================================================
@@ -536,7 +583,7 @@ function paragraphs(text) {
     .split(/\n\s*\n/)
     .map(block => block.trim())
     .filter(Boolean)
-    .map(block => `<p>${escapeHtml(block.replace(/\n/g, " "))}</p>`)
+    .map(block => `<p>${block.replace(/\n/g, " ")}</p>`)
     .join("\n");
 }
 

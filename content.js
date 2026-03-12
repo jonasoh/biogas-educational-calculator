@@ -83,7 +83,7 @@ andel av substratet som är torrsubstans respektive hur stor del av den som
 hydraulisk retentionstid (Hydraulic Retention Time, HRT) anger sedan hur hårt reaktorn belastas och hur länge materialet
 uppehåller sig inne i rötkammaren.
 
-Du kan läsa mer om dessa beräkningar i handboken på s 72–74. `,
+Du kan läsa mer om dessa beräkningar i <a href="assets/handbok.pdf?p=72#page=72">handboken på s 72–74</a>. `,
 
       equations: [
 
@@ -117,7 +117,7 @@ Ange de tre massorna nedan för att beräkna värdena.`,
               //placeholder: 100,
               min: 0,
               step: 1,
-              decimals: 2
+              decimals: 1
             },
             {
               id:          "m_dry",
@@ -125,9 +125,9 @@ Ange de tre massorna nedan för att beräkna värdena.`,
               unit:        "g",
               description: "Provets massa efter torkning vid 105°C i 24 h",
               //placeholder: 18,
-              min:         0,
+              min: 0,
               step: 1,
-              decimals: 2
+              decimals: 1
             },
             {
               id:          "m_ash",
@@ -135,7 +135,7 @@ Ange de tre massorna nedan för att beräkna värdena.`,
               unit:        "g",
               description: "Massa kvar efter glödgning vid 550°C i 4 h",
               //placeholder: 2,
-              min:         0,
+              min: 0,
               step: 0.1,
               decimals: 3
             },
@@ -151,21 +151,21 @@ Ange de tre massorna nedan för att beräkna värdena.`,
 allt vatten har torkats bort. Den bestäms genom att väga ett prov före och efter torkning vid 105°C i 24 timmar.`,
 
               formula_latex:   "TS\\,(\\%) = \\frac{m_{torr}}{m_{våt}} \\times 100",
-              formula_filled:  "TS = ({m_torr} g ÷ {m_våt} g) × 100",
+              formula_filled:  "TS = ({m_dry} g ÷ {m_wet} g) × 100",
               formula_calc:    "m_dry / m_wet * 100",
 
               result_symbol:   "TS",   // injiceras även som variabeln "TS" för delekvationer nedan
               result_unit:     "%",
               result_decimals: 1,
 
-              typical_range: /*{
+              /*typical_range: {
                 min:         5,
                 max:         20,
                 unit:        "%",
                 low_text:    "Mycket lågt TS, typiskt för exempelvis flytgödsel.",
                 normal_text: "",
                 high_text:   "Högt TS — substratet är relativt torrt (t.ex. halm, torkat gödsel). Vanlig våtrötning kan vara svår; överväg förspädning eller torrötning."
-              }*/ null, 
+              },*/ 
 
               educational_text: `Total Solids (TS) är en av de mest grundläggande karakteriseringsparametrarna
 inom biogasteknik. Eftersom biogasanläggningar typiskt hanterar substrat med
@@ -192,10 +192,10 @@ TS alltid anges på färskviktsbasis (FM, Fresh Matter), enligt denna ekvation.`
               intro: `Volatile Solids (VS) representerar den organiska fraktionen av
 torrsubstansen — den del som i princip kan brytas ned av mikroorganismer
 för att producera biogas. Askan som återstår efter glödgning vid 550 °C
-är den oorganiska (mineraliska) fraktionen.`,
+är den oorganiska fraktionen (mineralfraktionen).`,
 
               formula_latex:   "VS\\,(\\%) = \\frac{m_{torr} - m_{aska}}{m_{våt}} \\times 100",
-              formula_filled:  "VS = (({m_torr} g − {m_aska} g) ÷ {m_våt} g) × 100",
+              formula_filled:  "VS = (({m_dry} g − {m_ash} g) ÷ {m_wet} g) × 100",
               formula_calc:    "(m_dry - m_ash) / m_wet * 100",
 
               result_symbol:   "VS",   // injiceras även som variabeln "VS" för VS/TS nedan
@@ -213,11 +213,11 @@ för att producera biogas. Askan som återstår efter glödgning vid 550 °C
 
               educational_text: `Volatile Solids (VS) är den viktigaste parametern för att bedöma biogaspotential.
 Endast den organiska fraktionen av ett substrat kan omvandlas till biogas
-av anaeroba mikroorganismer; den mineraliska fraktionen (sand, salter, etc.)
+av anaeroba mikroorganismer; mineralfraktionen (sand, salter, etc.)
 passerar reaktorn oförändrad och ansamlas som fasta ämnen i rötresten.
 
 Det specifika metanutbytet för ett substrat (uppmätt i
-så kallade BMP-tester, Biochemical Methane Potential)
+så kallade BMP-tester, Biochemical Methane Potential) anges
 alltid per kg VS som tillsatts, inte per kg TS eller per kg färskvikt.
 Detta möjliggör rättvis jämförelse mellan substrat med olika fukt- och
 askhalter.`
@@ -335,50 +335,9 @@ material) som matas in i rötkammaren per enhet reaktorvolym per dag. Det är
 den viktigaste parametern för att styra hur hårt processen
 belastas. OLR anges typiskt i kg VS per m³ per dygn.
 
-OLR kan beräknas på två ekvivalenta sätt som visas nedan. Fyll i alla
-parametrar för att se båda beräkningarna.`,
+OLR kan beräknas på två ekvivalenta sätt som visas nedan.`,
 
-          // Delade indata för båda beräkningsvägarna
-          parameters: [
-            {
-              id:          "m_wet_substrate",
-              name:        "Våtvikt per dag",
-              unit:        "ton",
-              description: "Mängd substrat som matas in i reaktorn per dag",
-              //placeholder: 150,
-              min: 0,
-              step: 5,
-              decimals: 0
-            },
-            {
-              id:          "vs_percentage",
-              name:        "VS-halt substrat",
-              unit:        "%",
-              description: "Procentandel VS i det inmatade substratet (av våtvikt)",
-              //placeholder: 15,
-              min: 0,
-              step: 1,
-              decimals: 1
-            },
-            {
-              id:          "v_reactor",
-              name:        "Reaktorvolym",
-              unit:        "m³",
-              description: "Aktiv (flytande) volym i rötkammaren",
-              //placeholder: 500,
-              min:         0.001
-            },
-            {
-              id:          "hrt_olr",
-              name:        "HRT",
-              unit:        "dygn",
-              description: "Hydraulisk retentionstid",
-              //placeholder: 20,
-              min:         0.1,
-              step:        1,
-              decimals:    1
-            }
-          ],
+          parameters: [], // Inga delade parametrar — varje beräkningsväg har egna
 
           equations: [
 
@@ -387,6 +346,34 @@ parametrar för att se båda beräkningarna.`,
               id:    "olr_mass",
               title: "Via inmatat flöde och reaktorvolym",
               intro: `Den klassiska definitionen: inmatad VS-massa per dygn dividerat med reaktorvolymen.`,
+
+              parameters: [
+                {
+                  id:          "m_wet_substrate",
+                  name:        "Våtvikt per dag",
+                  unit:        "ton",
+                  description: "Mängd substrat som matas in i reaktorn per dag",
+                  min: 0,
+                  step: 5,
+                  decimals: 0
+                },
+                {
+                  id:          "vs_percentage",
+                  name:        "VS-halt substrat",
+                  unit:        "%",
+                  description: "Procentandel VS i det inmatade substratet (av våtvikt)",
+                  min: 0,
+                  step: 1,
+                  decimals: 1
+                },
+                {
+                  id:          "v_reactor",
+                  name:        "Reaktorvolym",
+                  unit:        "m³",
+                  description: "Aktiv (flytande) volym i rötkammaren",
+                  min:         0.001
+                }
+              ],
 
               formula_latex:   "OLR = \\frac{\\dot{m}_{våt} \\times VS\\,(\\%)}{V_R} \\times 10",
               formula_filled:  "OLR = {m_wet_substrate} ton/d × {vs_percentage} % ÷ {v_reactor} m³ × 10",
@@ -420,6 +407,27 @@ Här kunde man skriva något om olika typiska värden.`
 retentionstid, under antagandet att substratets densitet är
 ungefär 1 000 kg/m³. (Nu blir det multiplicerat med 10 eftersom vi anger VS i %... så det är 100 i nämnaren och 1000 i täljaren. Vet inte om man borde förklara det eller skriva ut ekvationen i två steg?).`,
 
+              parameters: [
+                {
+                  id:          "vs_percentage",
+                  name:        "VS-halt substrat",
+                  unit:        "%",
+                  description: "Procentandel VS i det inmatade substratet (av våtvikt)",
+                  min: 0,
+                  step: 1,
+                  decimals: 1
+                },
+                {
+                  id:          "hrt_olr",
+                  name:        "HRT",
+                  unit:        "dygn",
+                  description: "Hydraulisk retentionstid",
+                  min:         0.1,
+                  step:        1,
+                  decimals:    1
+                }
+              ],
+
               formula_latex:   "OLR = \\frac{VS\\,(\\%) \\times 10}{HRT}",
               formula_filled:  "OLR = {vs_percentage} % × 10 ÷ {hrt_olr} d",
               formula_calc:    "vs_percentage * 10 / hrt_olr",
@@ -428,29 +436,7 @@ ungefär 1 000 kg/m³. (Nu blir det multiplicerat med 10 eftersom vi anger VS i 
               result_unit:     "kg VS / (m³·d)",
               result_decimals: 2,
 
-              typical_range: {
-                min:         1.0,
-                max:         4.0,
-                unit:        "kg VS/(m³·d)",
-                low_text:    "OLR är lågt — reaktorn är underlastad.",
-                normal_text: "OLR är inom det typiska driftsintervallet för en CSTR som behandlar lantbrukssubstrat.",
-                high_text:   "OLR är högt — reaktorn är hårt belastad. Risk för VFA-ackumulering och processstörningar."
-              },
-
-              educational_text: `Denna beräkningsväg utgår från att OLR = c_VS / HRT, där c_VS är
-VS-koncentrationen i substratet (kg VS per m³). Eftersom HRT = V_R / Q
-gäller att Q / V_R = 1 / HRT, och därmed:
-
-OLR = Q × c_VS / V_R = c_VS / HRT
-
-Med VS-halt i procent och substratdensiteten ≈ 1 000 kg/m³ blir
-c_VS = VS% / 100 × 1 000 = VS% × 10 kg/m³, vilket ger faktorn × 10 i
-formeln (ekvivalent med VS-halt [som decimal] × 1 000 / HRT).
-
-De två beräkningsvägarna ger samma resultat när HRT är konsekvent med
-reaktorvolymen och flödet (dvs. när substratdensiteten faktiskt är
-≈ 1 000 kg/m³). Avvikelse mellan värdena kan indikera att ett av
-antagandena inte stämmer.`
+              //educational_text: null //``
             }
 
           ] // slut på OLR-ekvationer
@@ -470,7 +456,7 @@ antagandena inte stämmer.`
 Kväve används för att syntetisera protein och DNA, och påverkar därmed mikrobernas tillväxt och aktivitet. 
 För mycket kväve kan dock vara toxiskt för vissa mikroorganismer, vilket kan leda till störningar i processen.
 
-Läs mer i handboken s. 76–79.`,
+Läs mer i <a href="assets/handbok.pdf?p=76#page=76">handboken s. 76–79</a>.`,
 
       equations: [
 
@@ -498,17 +484,17 @@ beräknas den i steget nedan, varefter NH₃-halten beräknas automatiskt.`,
             },
             {
               id:          "tan",
-              name:        "Total Ammonia Nitrogen (TAN)",
+              name:        "Ammoniumkväve (TAN)",
               unit:        "mg N/L",
-              description: "Totalt ammoniumkväve uppmätt i rötresten",
+              description: "Totalt ammoniumkväve uppmätt i reaktorn",
               //placeholder: 3000,
               min:         0
             },
             {
               id:          "pH",
-              name:        "pH",
+              name:        "pH i reaktorn",
               unit:        "",
-              description: "pH i reaktorn",
+              description: "",
               //placeholder: 7.8,
               min:         0
             }
@@ -628,44 +614,22 @@ som gödselmedel, eftersom mineraliserat kväve är direkt växttillgängligt.`,
               name:        "Organiskt kväve i substrat",
               unit:        "mg N/kg våtvikt",
               description: "",
-              min:         0.001,
+              min:         0,
               step:        50,
               decimals:    0
             }
           ],
 
-          typical_range: {
+          typical_range: null /*{
             min:         20,
             max:         60,
             unit:        "%",
             low_text:    "Låg mineralisering — en stor del av kvävet finns kvar i organisk form i rötresten. Kvävet är ännu inte växttillgängligt och kräver vidare nedbrytning i marken.",
             normal_text: "Mineraliseringsgraden är inom det typiska intervallet för anaerob rötning av lantbrukssubstrat.",
             high_text:   "Hög mineralisering — en stor andel av det organiska kvävet har omvandlats till ammonium. Rötresten har ett högt innehåll av direkt växttillgängligt kväve."
-          },
+          }*/,
 
-          educational_text: `Kvävemineralisering under anaerob rötning är en central process för
-rötresten som biogödsel. När mikroorganismer bryter ned organiskt material
-(proteiner, nukleinsyror m.m.) frigörs kvävet som ammonium-NH₄⁺, vilket är
-den form av kväve som växter kan ta upp direkt.
-
-Organiskt kväve beräknas som skillnaden mellan totalkväve (TKN, Total
-Kjeldahl Nitrogen) och ammoniumkväve (NH₄⁺-N):
-
-  Org.-N = TKN − NH₄⁺-N
-
-Formeln mäter nettot av ammoniakfrigörelse under rötprocessen: ökningen av
-NH₄⁺-N från substrat till rötrest, satt i relation till substratets organiska
-kväveinnehåll.
-
-Typiska mineraliseringsgrader för vanliga lantbrukssubstrat:
-  Nötflytgödsel:      20–35 %
-  Grisflytgödsel:     30–50 %
-  Matavfall/slakteri: 40–60 %
-
-En hög mineralisering är fördelaktig ur gödslingsperspektiv men kan
-samtidigt öka risken för ammoniakavgång och potentiell hämning av
-biogasprocessen (se fri ammoniak ovan). Avvägningen mellan kvävefrigörelse
-och processstabilitet är viktig vid substratoptimering.`
+          educational_text: `Kvävemineralisering säger hur mycket organiskt kväve som omvandlas till ammoniumkväve under processen. Detta påverkar kvaliteten på rötresten … Vet inte exakt vad detta används till.`
         }
 
       ] // slut på ekvationer: Flik 2
