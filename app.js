@@ -43,7 +43,7 @@ function waitForKaTeX(callback, attempts = 0) {
 function buildApp() {
   const navEl      = document.getElementById("tab-nav");
   const contentEl  = document.getElementById("tab-content");
-  const { tabs }   = BIOGAS_CONTENT;
+  const { tabs }   = CALCULATOR_CONTENT;
 
   tabs.forEach((tab, tabIndex) => {
     // --- Build tab button ---

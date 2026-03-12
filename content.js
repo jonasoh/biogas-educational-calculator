@@ -66,7 +66,7 @@
  * ============================================================
  */
 
-const BIOGAS_CONTENT = {
+const CALCULATOR_CONTENT = {
 
   tabs: [
 
@@ -637,4 +637,4 @@ som gödselmedel, eftersom mineraliserat kväve är direkt växttillgängligt.`,
 
   ] // slut på tabs
 
-}; // slut på BIOGAS_CONTENT
+}; // slut på CALCULATOR_CONTENT
