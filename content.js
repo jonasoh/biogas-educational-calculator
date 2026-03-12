@@ -314,7 +314,7 @@ HRT anges i dygn.`,
             unit:        "dygn",
             low_text:    "Låg HRT. material passerar snabbt genom rötkammaren. Substratnedbrytningen blir ofullständig.",
             normal_text: "HRT är inom det typiska intervallet.",
-            high_text:   "Hög HRT. materialet har lång uppehållstid, vilket gynnar hög nedbrytningseffektivitet. Reaktorn kan vara överdimensionerad för substratvolymen."
+            high_text:   "Hög HRT. materialet har lång uppehållstid, vilket gynnar hög nedbrytningseffektivitet men eventuellt leder till minskad volumetrisk produktion."
           },
 
           educational_text: `Retentionstiden är en grundläggande parameter
@@ -620,16 +620,16 @@ som gödselmedel, eftersom mineraliserat kväve är direkt växttillgängligt.`,
             }
           ],
 
-          typical_range: null /*{
+          typical_range: {
             min:         20,
-            max:         60,
+            max:         50,
             unit:        "%",
             low_text:    "Låg mineralisering — en stor del av kvävet finns kvar i organisk form i rötresten. Kvävet är ännu inte växttillgängligt och kräver vidare nedbrytning i marken.",
             normal_text: "Mineraliseringsgraden är inom det typiska intervallet för anaerob rötning av lantbrukssubstrat.",
             high_text:   "Hög mineralisering — en stor andel av det organiska kvävet har omvandlats till ammonium. Rötresten har ett högt innehåll av direkt växttillgängligt kväve."
-          }*/,
+          },
 
-          educational_text: `Kvävemineralisering säger hur mycket organiskt kväve som omvandlas till ammoniumkväve under processen. Detta påverkar kvaliteten på rötresten … Vet inte exakt vad detta används till.`
+          educational_text: `Kvävemineraliseringen är ett ytterligare mått på effektiviteten i biogasprocessen. Värdet kan även användas för att beräkna hur mycket ammoniumkväve som kan bildas när man tillför ett nytt substrat till sin substratmix.`
         }
 
       ] // slut på ekvationer: Flik 2
