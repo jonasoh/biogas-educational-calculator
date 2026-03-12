@@ -6,7 +6,7 @@ The tool runs directly in a browser — no build step, no server required. All e
 
 ## Live Version
 
-A live version of the calculator is [available](https://vansinne.se/biogas/).
+A live version of the calculator is [available](https://vansinne.se/biogas/) (in Swedish).
 
 ## Editing Locally
 
