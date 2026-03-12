@@ -21,5 +21,6 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts
+          chmod 700 ~/.ssh
+          ssh-keyscan -H "$SERVER_HOST" -p $SERVER_PORT >> ~/.ssh/known_hosts
           scp -i ~/.ssh/id_ed25519 -P $SERVER_PORT -r ./* "$SERVER_USER@$SERVER_HOST:$DEPLOY_PATH"/
