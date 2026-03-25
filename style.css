@@ -633,6 +633,254 @@ footer {
   }
 }
 
+/* ============================================================
+   Co-digestion (Samrötning) Tab
+   ============================================================ */
+
+.codig-pickers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.codig-picker-card {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 1.1rem 1.2rem 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+}
+
+.codig-picker-card h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e4d2b;
+}
+
+.codig-select {
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #9ca3af;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: #f9fafb;
+  color: #111827;
+  margin-bottom: 0.75rem;
+  box-sizing: border-box;
+}
+
+.codig-select:focus {
+  outline: none;
+  border-color: #2a6b3c;
+  box-shadow: 0 0 0 2px rgba(42,107,60,0.18);
+}
+
+.codig-proportion-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.codig-proportion-row label {
+  font-size: 0.85rem;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.codig-proportion-row input[type="number"] {
+  width: 70px;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #9ca3af;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.codig-proportion-row input[type="number"]:disabled {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.codig-proportion-row input[type="number"]:focus {
+  outline: none;
+  border-color: #2a6b3c;
+  box-shadow: 0 0 0 2px rgba(42,107,60,0.18);
+}
+
+.codig-proportion-row .codig-pct-label {
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+.codig-props {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+
+.codig-prop {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.82rem;
+}
+
+.codig-prop .codig-prop-label {
+  color: #374151;
+  display: block;
+  font-size: 0.75rem;
+  margin-bottom: 0.1rem;
+}
+
+.codig-prop .codig-prop-value {
+  color: #1e4d2b;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.codig-prop-note {
+  grid-column: 1 / -1;
+  font-size: 0.78rem;
+  color: #4b5563;
+  font-style: italic;
+  line-height: 1.4;
+  margin-top: 0.2rem;
+  padding: 0.3rem 0.5rem;
+  background: #f9fafb;
+  border-radius: 4px;
+}
+
+.codig-empty-hint {
+  color: #9ca3af;
+  font-size: 0.85rem;
+  font-style: italic;
+  padding: 0.25rem 0;
+}
+
+/* Results table */
+.codig-results-card {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+}
+
+.codig-results-card h3 {
+  margin: 0 0 0.85rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e4d2b;
+}
+
+.codig-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.codig-table th {
+  text-align: left;
+  padding: 0.45rem 0.6rem;
+  background: #f0fdf4;
+  border-bottom: 2px solid #bbf7d0;
+  color: #1e4d2b;
+  font-weight: 600;
+}
+
+.codig-table td {
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid #e5e7eb;
+  color: #111827;
+}
+
+.codig-table tr:last-child td {
+  border-bottom: none;
+}
+
+.codig-table tr:hover td {
+  background: #f9fafb;
+}
+
+.codig-delta-pos     { color: #16a34a; font-weight: 600; }
+.codig-delta-neg     { color: #b45309; font-weight: 600; }
+.codig-delta-neutral { color: #6b7280; }
+
+/* Commentary box */
+.codig-commentary {
+  border-radius: 8px;
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.codig-commentary.has-warnings {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  color: #78350f;
+}
+
+.codig-commentary.no-warnings {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  color: #14532d;
+}
+
+.codig-commentary ul {
+  margin: 0.4rem 0 0.5rem 1.2rem;
+  padding: 0;
+}
+
+.codig-commentary li {
+  margin-bottom: 0.2rem;
+}
+
+.codig-commentary .codig-disclaimer {
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+/* Charts */
+.codig-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.codig-chart-card {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.9rem 0.8rem 0.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+}
+
+.codig-chart-card h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e4d2b;
+  text-align: center;
+}
+
+.codig-chart-div {
+  height: 220px;
+}
+
+@media (max-width: 700px) {
+  .codig-pickers { grid-template-columns: 1fr; }
+  .codig-charts  { grid-template-columns: 1fr; }
+}
+
 /* --- Print ------------------------------------------------ */
 
 @media print {

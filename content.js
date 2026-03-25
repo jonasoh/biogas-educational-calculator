@@ -66,6 +66,67 @@
  * ============================================================
  */
 
+/* ============================================================
+   Substratdata för Samrötningsfliken
+   Källa: Avfall Sverige U2009:14 – Substrathandbok för biogasproduktion
+   ts      = torrsubstanshalt (% av våtvikt)
+   vs_ts   = VS/TS-kvot (fraktion, 0–1)
+   bmp     = biometanpotential (Nm³ CH₄ / ton VS)
+   cn      = C/N-kvot
+   ============================================================ */
+const CODIGESTION_SUBSTRATES = [
+  {
+    id: "notflytgodsel",
+    name: "Nötflytgödsel",
+    ts: 9, vs_ts: 0.80, bmp: 213, cn: 13,
+    note: "Typiskt bassubstrat. Kan orsaka svämtäcke. Redan delvis nedbrutet (dåligt gasutbyte)"
+  },
+  {
+    id: "svingodsel",
+    name: "Svingödsel",
+    ts: 8, vs_ts: 0.80, bmp: 268, cn: 5,
+    note: "Kan innehålla sand som sedimenterar, kan orsaka skumning."
+  },
+  // C/N-kvot i hästgödsel approximerat från Lallement 2023, On-Farm Composting Handbook 1992, väldigt varierande.
+  {
+    id: "hastgodsel",
+    name: "Hästgödsel",
+    ts: 30, vs_ts: 0.80, bmp: 170, cn: 40,
+    note: "Hög TS-halt pga strö. Kan innehålla sand och grus som sedimenterar. God kolkälla vid samrötning med kväverika substrat."
+  },
+  {
+    id: "honsgodsel",
+    name: "Hönsgödsel",
+    ts: 42, vs_ts: 0.76, bmp: 247, cn: 7,
+    note: "Kan orsaka svämtäcke pga fjädrar, kan innehålla sand, grus och skal som sedimenterar. Ej lämpligt som ensamt substrat pga högt kväveinnehåll."
+  },
+  {
+    id: "slakteriavfall_magtarm",
+    name: "Slakteriavfall (mag/tarm)",
+    ts: 16, vs_ts: 0.83, bmp: 434, cn: 30,
+    note: "Energirikt substrat med högt gasutbyte. Lämpar sig mindre bra som ensamt substrat, risk för sjunkande pH."
+  },
+  {
+    id: "returprodukt_mejeri",
+    name: "Returprodukt (mejeri)",
+    ts: 20, vs_ts: 0.95, bmp: 520, cn: 8,
+    note: "Mycket högt gasutbyte. Låg alkalinitet – bör samrötas med t.ex. gödsel."
+  },
+  // C/N-kvot uppskattad
+  {
+    id: "vall",
+    name: "Vall",
+    ts: 33, vs_ts: 0.88, bmp: 300, cn: 20,
+    note: "Bra energiinnehåll. Kräver mekanisk sönderdelning. Lågt innehåll av vissa spårämnen."
+  },
+  {
+    id: "halm",
+    name: "Halm",
+    ts: 78, vs_ts: 0.91, bmp: 207, cn: 90,
+    note: "Mycket hög TS-halt och C/N-kvot. Kräver förbehandling för effektiv nedbrytning. Risk för svämtäcke."
+  },
+];
+
 const CALCULATOR_CONTENT = {
 
   tabs: [
@@ -840,7 +901,117 @@ substrat.
         }
 
       ] // slut på ekvationer: Flik 3
-    } // slut på Flik 3
+    }, // slut på Flik 3
+
+    // ========================================================
+    // FLIK 4 — Samrötning
+    // Obs: Denna flik renderas av codigestion.js (type: "codigestion").
+    // Lägg inte till ett "equations"-fält här.
+    // ========================================================
+    {
+      id:    "codigestion",
+      type:  "codigestion",
+      title: "Samrötning",
+      intro: `Samrötning innebär att två eller flera substrat rötas tillsammans i samma biogasreaktor. Genom att kombinera substrat kan man förbättra C/N-kvoten, öka biogasutbytet, …
+
+Välj ett primärt substrat och ange andelen av ett sekundärt substrat för att se hur blandningen påverkar torrsubstanshalt, VS-halt, C/N-kvot och metanproduktion. Alla beräkningar avser ett intag på 1 ton (1 000 kg) våtvikt.
+
+Här bör man väl säga något om begräsningarna med beräkningen redan nu?`,
+
+      // -----------------------------------------------------------
+      // Standardinställningar
+      // -----------------------------------------------------------
+      defaults: {
+        substrate1:  "notflytgodsel", // id för förhandsvalt primärsubstrat
+        proportion2: 20,              // standardandel (%) för kosubstrat
+      },
+
+      // -----------------------------------------------------------
+      // Färger
+      // -----------------------------------------------------------
+      colors: {
+        substrate1: "#2a6b3c", // primärsubstrat (grön)
+        substrate2: "#a39d4b", // kosubstrat (orange)
+      },
+
+      // -----------------------------------------------------------
+      // Etiketter
+      // -----------------------------------------------------------
+      labels: {
+        // Substratväljarkort
+        substrate1_heading:      "Substrat 1 (bassubstrat)",
+        substrate2_heading:      "Substrat 2 (kosubstrat)",
+        proportion_label:        "Andel:",
+        substrate2_blank_option: "— Välj kosubstrat —",
+        empty_hint_s2:           "Välj ett kosubstrat för att se egenskaper.",
+
+        // Egenskapstabell
+        prop_ts:       "TS-halt",
+        prop_vs_ts:    "VS/TS",
+        prop_bmp:      "BMP",
+        prop_cn:       "C/N-kvot",
+        prop_bmp_unit: "Nm³/ton VS",
+
+        // Resultattabell
+        results_heading: "Jämförelse: monosubstrat vs samrötning (per ton inmatat våtvikt)",
+        col_parameter:   "Parameter",
+        col_mono:        "Monorötning",
+        col_codig:       "Samrötning",
+        col_change:      "Förändring",
+        row_ts:          "TS-halt (%)",
+        row_vs:          "VS (kg/ton)",
+        row_cn:          "C/N-kvot",
+        row_ch4:         "CH₄ (Nm³/ton)",
+
+        // Diagram
+        chart1_title:      "Substratbidrag (%)",
+        chart2_title:      "Metanproduktion (Nm³/ton)",
+        chart3_title:      "TS-halt (%)",
+        chart1_categories: ["Våtvikt", "TS", "VS", "CH₄"],
+        chart2_y_label:    "Nm³ CH₄ / ton",
+        chart3_y_label:    "TS (%)",
+        chart_mono_bar:    "Monorötning",
+        chart_codig_bar:   "Samrötning",
+
+        // Kommentarsruta
+        no_warnings: "Inga varningar – substratblandningen ser rimlig ut utifrån de valda parametrarna.",
+        disclaimer:  "Beräkningarna är förenklade och baserade på litteraturvärden från bl.a. Avfall Sveriges handbok <a href='https://www.biogodsel.se/media/1huf5snm/u2009-14_substrathandbok.pdf' target='_blank' rel='noopener noreferrer'>Substrathandbok för biogasproduktion</a>. Verkliga resultat varierar beroende på substratets kvalitet, driftparametrar, m.m.",
+      },
+
+      // -----------------------------------------------------------
+      // Varningsregler — utvärderas av codigestion.js
+      //
+      // context:   "mono"  = inget kosubstrat valt
+      //            "codig" = kosubstrat valt
+      // variable:  nyckel i calc-objektet från calculateCodigestion()
+      // operator:  "<" eller ">"
+      // threshold: numeriskt gränsvärde
+      // text:      varningstext; {value} ersätts med beräknat värde (1 decimal),
+      //            {abs_value} med absolutvärdet, {name} med substrat 1:s namn
+      // -----------------------------------------------------------
+
+      // OBS - improviserade mha LLM.
+      warnings: [
+        // Monosubstratvarninga
+        { context: "mono", variable: "cn_mono",     operator: "<", threshold: 15,
+          text: "C/N-kvoten för {name} är {value} (< 15) – risk för ammoniakinhibering vid monosubstrat." },
+        { context: "mono", variable: "cn_mono",     operator: ">", threshold: 30,
+          text: "C/N-kvoten för {name} är {value} (> 30) – kvävebegränsning kan försämra processen." },
+        { context: "mono", variable: "ts_mono_pct", operator: ">", threshold: 15,
+          text: "TS-halten ({value} %) är hög för ett monosubstrat – kan kräva spädning." },
+        // Samrötningsvarningar
+        { context: "codig", variable: "ts_codig_pct",  operator: ">", threshold: 15,
+          text: "TS-halten i blandningen är {value} % (> 15 %) – risk för dålig omrörning och bryggor i reaktorn." },
+        { context: "codig", variable: "cn_codig",       operator: "<", threshold: 15,
+          text: "C/N-kvoten i blandningen är {value} (< 15) – förhöjd risk för ammoniakinhibering." },
+        { context: "codig", variable: "cn_codig",       operator: ">", threshold: 30,
+          text: "C/N-kvoten i blandningen är {value} (> 30) – kvävebegränsning kan begränsa gasproduktionen." },
+        { context: "codig", variable: "ch4_change_pct", operator: ">", threshold: 10,
+          text: "Metanproduktionen ökar med {abs_value} % jämfört med monosubstrat – positiv synergieffekt." },
+        { context: "codig", variable: "ch4_change_pct", operator: "<", threshold: -5,
+          text: "Metanproduktionen minskar med {abs_value} % jämfört med monosubstrat – kontrollera substratandelen." },
+      ],
+    }
 
   ] // slut på tabs
 

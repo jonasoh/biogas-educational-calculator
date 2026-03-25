@@ -73,11 +73,13 @@ function buildApp() {
     }
 
     // Equations — detect groups (have their own equations sub-array) vs standalone
-    tab.equations.forEach(item => {
-      panel.appendChild(
-        item.equations ? buildGroupCard(item) : buildEquationCard(item)
-      );
-    });
+    if (tab.type === "codigestion") {
+      buildCodigestionPanel(panel, tab);
+    } else {
+      (tab.equations || []).forEach(item => {
+        panel.appendChild(item.equations ? buildGroupCard(item) : buildEquationCard(item));
+      });
+    }
 
     contentEl.appendChild(panel);
   });
@@ -95,6 +97,9 @@ function activateTab(activeId, tabs) {
     btn.setAttribute("aria-selected", isActive ? "true" : "false");
     panel.hidden = !isActive;
   });
+  // Let Plotly (and any other responsive content) reflow after the panel is shown.
+  // requestAnimationFrame ensures the browser completes its layout pass first.
+  requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
 }
 
 /* ============================================================
