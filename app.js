@@ -395,10 +395,29 @@ function buildParamField(param, eq, updateCallback) {
   desc.classList.add("param-desc");
   desc.innerHTML = param.description;
 
+  const hint = document.createElement("span");
+  hint.classList.add("param-hint");
+  hint.setAttribute("aria-live", "polite");
+
+  input.addEventListener("input", () => {
+    const raw = input.value.trim();
+    const val = parseFloat(raw);
+    if (raw === "") {
+      hint.textContent = "";
+    } else if (isNaN(val)) {
+      hint.textContent = "Ange ett giltigt värde";
+    } else if (param.min !== undefined && val < param.min) {
+      hint.textContent = `Måste vara ≥ ${param.min}`;
+    } else {
+      hint.textContent = "";
+    }
+  });
+
   input.addEventListener("input", updateCallback || (() => updateEquation(eq)));
 
   field.appendChild(label);
   field.appendChild(input);
+  field.appendChild(hint);
   field.appendChild(desc);
   return field;
 }
