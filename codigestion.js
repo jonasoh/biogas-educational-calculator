@@ -373,8 +373,8 @@ function renderCommentary(box, tab, calc, s1, s2, L) {
   box.className = "codig-commentary " + (hasWarnings ? "has-warnings" : "no-warnings");
   let html = hasWarnings
     ? "<ul>" + warnings.map(w => `<li>${escapeHtml(w)}</li>`).join("") + "</ul>"
-    : `<p>${escapeHtml(L.no_warnings)}</p>`;
-  html += `<p class="codig-disclaimer">${escapeHtml(L.disclaimer)}</p>`;
+    : `<p>${L.no_warnings}</p>`;
+  html += `<p class="codig-disclaimer">${L.disclaimer}</p>`;
   box.innerHTML = html;
 }
 
