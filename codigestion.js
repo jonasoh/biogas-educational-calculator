@@ -442,7 +442,9 @@ function renderChart1(div, calc, s1, s2, L, C) {
   const layout = codigLayout({
     barmode: "stack",
     yaxis: { range: [0, 100], ticksuffix: "%" },
-    legend: { orientation: "h", y: -0.22, x: 0.5, xanchor: "center" },
+    showlegend: true,
+    legend: { orientation: "h", y: -0.28, x: 0.5, xanchor: "center" },
+    margin: { t: 10, r: 10, b: 65, l: 46 },
   });
 
   Plotly.react(div, data, layout, CODIG_CHART_CONFIG);
@@ -499,6 +501,7 @@ function codigLayout(overrides) {
     plot_bgcolor:  "transparent",
     font: { family: "inherit", size: 11 },
     showlegend: false,
+    transition: { duration: 400, easing: "cubic-in-out" },
     xaxis: { fixedrange: true },
     yaxis: { fixedrange: true },
   }, overrides);
