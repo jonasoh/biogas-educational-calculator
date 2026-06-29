@@ -16,10 +16,11 @@ function buildCodigestionPanel(panelEl, tab) {
   const L = tab.labels   || {};
   const C = tab.colors   || { substrate1: "#2a6b3c", substrate2: "#e07b35" };
   const D = tab.defaults || { substrate1: "notflytgodsel", proportion2: 30 };
+  const overrideState = { substrate1: {}, substrate2: {} };
 
   function onChange() {
-    const s1 = getSubstrate(sel1.value) || getCustomSubstrateData(customPanel1, L);
-    const s2 = getSubstrate(sel2.value) || getCustomSubstrateData(customPanel2, L);
+    const s1 = resolveSubstrate(sel1, customPanel1, overrideState.substrate1, L);
+    const s2 = resolveSubstrate(sel2, customPanel2, overrideState.substrate2, L);
     const p2 = s2 ? Math.max(1, Math.min(99, parseFloat(inp2.value) || D.proportion2)) : 0;
 
     renderProps(propDisplay1, s1, L, false);
@@ -37,8 +38,8 @@ function buildCodigestionPanel(panelEl, tab) {
   }
 
   // Substrate pickers
-  const { pickersEl, sel1, propDisplay1, inp2, sel2, propDisplay2, customPanel1, customPanel2 } =
-    buildSubstratePickers(L, D, onChange);
+  const { pickersEl, sel1, propDisplay1, inp2, sel2, propDisplay2, customPanel1, customPanel2, editPanel1, editPanel2, refreshEditPanels } =
+    buildSubstratePickers(L, D, onChange, overrideState);
   panelEl.appendChild(pickersEl);
 
   // Charts (must be in DOM before Plotly renders)
@@ -55,6 +56,7 @@ function buildCodigestionPanel(panelEl, tab) {
 
   // Pre-select substrate 1 default
   sel1.value = D.substrate1;
+  refreshEditPanels();
 
   // Plotly cannot measure a hidden element — defer the initial render until
   // the panel is first made visible (the tab is clicked for the first time).
@@ -81,7 +83,7 @@ function getSubstrate(id) {
 
 /* ---- Build substrate pickers ----------------------------- */
 
-function buildSubstratePickers(L, D, onChange) {
+function buildSubstratePickers(L, D, onChange, overrideState) {
   const pickersEl = document.createElement("div");
   pickersEl.className = "codig-pickers";
 
@@ -97,6 +99,9 @@ function buildSubstratePickers(L, D, onChange) {
 
   const customPanel1 = buildCustomSubstratePanel(L);
   card1.appendChild(customPanel1);
+
+  const editPanel1 = buildEditableSubstratePanel(L, "substrate1", overrideState.substrate1, onChange);
+  card1.appendChild(editPanel1);
 
   const prop1Row = document.createElement("div");
   prop1Row.className = "codig-proportion-row";
@@ -125,6 +130,9 @@ function buildSubstratePickers(L, D, onChange) {
   const customPanel2 = buildCustomSubstratePanel(L);
   card2.appendChild(customPanel2);
 
+  const editPanel2 = buildEditableSubstratePanel(L, "substrate2", overrideState.substrate2, onChange);
+  card2.appendChild(editPanel2);
+
   const prop2Row = document.createElement("div");
   prop2Row.className = "codig-proportion-row";
   prop2Row.innerHTML =
@@ -146,6 +154,22 @@ function buildSubstratePickers(L, D, onChange) {
     panel.hidden = select.value !== "custom";
   };
 
+  const syncEditPanel = (select, panel, substrateKey, state) => {
+    const isCustom = select.value === "custom";
+    panel.hidden = isCustom || select.value === "";
+    if (isCustom || select.value === "") return;
+
+    const baseSubstrate = getSubstrate(select.value);
+    if (!baseSubstrate) return;
+
+    panel.querySelectorAll("input[data-edit-key]").forEach(input => {
+      const key = input.getAttribute("data-edit-key");
+      const hasOverride = Object.prototype.hasOwnProperty.call(state, key);
+      const baseValue = key === "vs_ts" ? baseSubstrate.vs_ts * 100 : baseSubstrate[key];
+      input.value = hasOverride ? state[key] : baseValue;
+    });
+  };
+
   const syncProportionInputs = () => {
     const hasSecond = sel2.value !== "";
     inp2.disabled = !hasSecond;
@@ -165,12 +189,16 @@ function buildSubstratePickers(L, D, onChange) {
   });
 
   sel1.addEventListener("change", () => {
+    Object.keys(overrideState.substrate1).forEach(key => delete overrideState.substrate1[key]);
     syncCustomPanel(sel1, customPanel1);
+    syncEditPanel(sel1, editPanel1, "substrate1", overrideState.substrate1);
     onChange();
   });
 
   sel2.addEventListener("change", () => {
+    Object.keys(overrideState.substrate2).forEach(key => delete overrideState.substrate2[key]);
     syncCustomPanel(sel2, customPanel2);
+    syncEditPanel(sel2, editPanel2, "substrate2", overrideState.substrate2);
     syncProportionInputs();
     onChange();
   });
@@ -182,11 +210,17 @@ function buildSubstratePickers(L, D, onChange) {
     });
   });
 
+  const refreshEditPanels = () => {
+    syncEditPanel(sel1, editPanel1, "substrate1", overrideState.substrate1);
+    syncEditPanel(sel2, editPanel2, "substrate2", overrideState.substrate2);
+  };
+
   syncCustomPanel(sel1, customPanel1);
   syncCustomPanel(sel2, customPanel2);
+  refreshEditPanels();
   syncProportionInputs();
 
-  return { pickersEl, sel1, propDisplay1, inp2, sel2, propDisplay2, customPanel1, customPanel2 };
+  return { pickersEl, sel1, propDisplay1, inp2, sel2, propDisplay2, customPanel1, customPanel2, editPanel1, editPanel2, refreshEditPanels };
 }
 
 function populateSubstrateSelect(sel, includeBlank, L) {
@@ -206,6 +240,96 @@ function populateSubstrateSelect(sel, includeBlank, L) {
   customOpt.value = "custom";
   customOpt.textContent = L.custom_substrate_option;
   sel.appendChild(customOpt);
+}
+
+function buildEditableSubstratePanel(L, substrateKey, state, onChange) {
+  const panel = document.createElement("div");
+  panel.className = "codig-edit-panel";
+  panel.hidden = true;
+
+  const title = document.createElement("div");
+  title.className = "codig-edit-title";
+  title.textContent = L.edit_values_heading || "Justera värden (valfritt)";
+  panel.appendChild(title);
+
+  const fields = [
+    { key: "ts", label: L.prop_ts, unit: "%", min: 0, max: 100, step: 0.1 },
+    { key: "vs_ts", label: L.prop_vs_ts, unit: "%", min: 0, max: 100, step: 0.1 },
+    { key: "cn", label: L.prop_cn, unit: "", min: 0, max: 1000, step: 0.1 },
+    { key: "bmp", label: L.prop_bmp, unit: L.prop_bmp_unit, min: 0, max: 1000, step: 1 },
+  ];
+
+  fields.forEach(field => {
+    const fieldEl = document.createElement("label");
+    fieldEl.className = "codig-edit-field";
+    const input = document.createElement("input");
+    input.type = "number";
+    input.setAttribute("data-edit-key", field.key);
+    input.setAttribute("min", field.min);
+    input.setAttribute("max", field.max);
+    input.setAttribute("step", field.step);
+    input.addEventListener("input", () => {
+      const raw = input.value.trim();
+      if (raw === "") {
+        delete state[field.key];
+      } else {
+        const val = parseFloat(raw);
+        if (!Number.isNaN(val)) {
+          state[field.key] = val;
+        }
+      }
+      onChange();
+    });
+    input.addEventListener("change", () => {
+      const raw = input.value.trim();
+      if (raw === "") {
+        delete state[field.key];
+      } else {
+        const val = parseFloat(raw);
+        if (!Number.isNaN(val)) {
+          state[field.key] = val;
+        }
+      }
+      onChange();
+    });
+
+    fieldEl.innerHTML = `<span class="codig-edit-label">${escapeHtml(field.label)}</span>`;
+    fieldEl.appendChild(input);
+    if (field.unit) {
+      const unitEl = document.createElement("span");
+      unitEl.className = "codig-edit-unit";
+      unitEl.textContent = field.unit;
+      fieldEl.appendChild(unitEl);
+    }
+    panel.appendChild(fieldEl);
+  });
+
+  return panel;
+}
+
+function resolveSubstrate(selectEl, customPanel, state, L) {
+  if (!selectEl) return null;
+
+  if (selectEl.value === "custom") {
+    return getCustomSubstrateData(customPanel, L);
+  }
+
+  const baseSubstrate = getSubstrate(selectEl.value);
+  if (!baseSubstrate) return null;
+
+  const resolved = { ...baseSubstrate };
+  Object.entries(state || {}).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") return;
+    const numeric = parseFloat(value);
+    if (!Number.isFinite(numeric)) return;
+    if (key === "vs_ts") {
+      resolved.vs_ts = numeric / 100;
+    } else {
+      resolved[key] = numeric;
+    }
+  });
+
+  return resolved;
 }
 
 function buildCustomSubstratePanel(L) {

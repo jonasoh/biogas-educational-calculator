@@ -766,6 +766,56 @@ footer {
   box-sizing: border-box;
 }
 
+.codig-edit-panel {
+  margin-top: 0.75rem;
+  padding: 0.75rem 0.8rem;
+  border: 1px solid #dbe2ea;
+  border-radius: 0.7rem;
+  background: #f8fafc;
+}
+
+.codig-edit-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  color: #234a2e;
+}
+
+.codig-edit-field {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.84rem;
+  color: #475569;
+}
+
+.codig-edit-label {
+  min-width: 5rem;
+  font-weight: 600;
+}
+
+.codig-edit-field input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.45rem;
+  font: inherit;
+  background: #fff;
+}
+
+.codig-edit-field input:focus {
+  outline: none;
+  border-color: #2a6b3c;
+  box-shadow: 0 0 0 3px rgba(42,107,60,0.12);
+}
+
+.codig-edit-unit {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
 .codig-custom-panel {
   margin-top: 0.75rem;
   padding: 0.8rem 0.9rem;
