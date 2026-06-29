@@ -125,6 +125,12 @@ const CODIGESTION_SUBSTRATES = [
     ts: 78, vs_ts: 0.91, bmp: 207, cn: 90,
     note: "Mycket hög TS-halt och C/N-kvot. Kräver förbehandling för effektiv nedbrytning. Risk för svämtäcke."
   },
+  {
+    id: "djupstro_not",
+    name: "Djupströ, nöt",
+    ts: 30, vs_ts: 0.80, bmp: 250, cn: 80,
+    note: "Kolrikt material, lämpar sig väl att samrötas med kväverikt substrat. Kan innehålla sand och grus som sedimenterar."
+  },
 ];
 
 const CALCULATOR_CONTENT = {
