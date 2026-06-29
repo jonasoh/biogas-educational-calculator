@@ -263,14 +263,14 @@ för att producera biogas. Askan som återstår efter glödgning vid 550 °C
               result_unit:     "%",
               result_decimals: 1,
 
-              typical_range: {
+              /*typical_range: {
                 min:         2,
                 max:         33,
                 unit:        "%",
                 low_text:    "Mycket lågt VS — substratet har en stor mineralfraktion eller är kraftigt utspätt. Biogasutbytet per kg färskvikt blir begränsat.",
                 normal_text: "VS-halten är inom det typiska intervallet för organiska biogassubstrat.",
                 high_text:   "Mycket högt VS — substratet är både torrt och starkt organiskt. Utmärkt biogaspotential per kg färskvikt."
-              },
+              },*/
 
               educational_text: `Volatile Solids (VS) är den viktigaste parametern för att bedöma biogaspotential.
 Endast den organiska fraktionen av ett substrat kan omvandlas till biogas
