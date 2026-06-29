@@ -417,10 +417,8 @@ något underskattning av den verkliga nedbrytningen.`
         {
           id: "hrt",
           title: "Retentionstid (Hydraulic Retention Time, HRT)",
-          intro: `Retentionstiden är den genomsnittliga tid som material
-uppehåller sig inne i rötkammaren innan det avlägsnas som rötrest. En
-längre retentionstid gör att materialet får längre tid för att brytas ned.
-HRT anges i dygn.`,
+          intro: `Hydraulisk retentionstid (HRT), eller uppehållstid, är den genomsnittliga tid som material uppehåller sig inne i rötkammaren innan det avlägsnas som rötrest. 
+          En längre retentionstid gör att materialet får längre tid för att brytas ned. HRT anges i dygn.`,
 
           formula_latex:   "HRT = \\frac{V_{reaktor}}{V_{inmatat\\ substrat}}",
           formula_filled:  "HRT = {v_reactor} m³ ÷ {q_feed} m³/d",
@@ -454,19 +452,17 @@ HRT anges i dygn.`,
           ],
 
           typical_range: {
-            min:         15,
-            max:         40,
+            min:         20,
+            max:         50,
             unit:        "dygn",
-            low_text:    "Låg HRT. material passerar snabbt genom rötkammaren. Substratnedbrytningen blir ofullständig.",
-            normal_text: "HRT är inom det typiska intervallet.",
-            high_text:   "Hög HRT. materialet har lång uppehållstid, vilket gynnar hög nedbrytningseffektivitet men eventuellt leder till minskad volumetrisk produktion."
+            low_text:    "Låg HRT. Material passerar snabbt genom rötkammaren. Risk för att substratnedbrytningen blir ofullständig (låg nebrytningsgrad).",
+            normal_text: "HRT är inom det typiska intervallet för processer baserade på lantbrukssubstrat.",
+            high_text:   "Hög HRT. Materialet har lång uppehållstid, vilket gynnar hög nedbrytningseffektivitet men eventuellt leder till låg volumetrisk gasproduktion."
           },
 
           educational_text: `Retentionstiden är en grundläggande parameter
-för en kontinuerligt matad rötkammare. Den anger hur länge en vattenmolekyl
-(eller löst substrat) i genomsnitt uppehåller sig i reaktorn innan den lämnar
-med utflödet, men används ofta som ett mått på hur länge substratet i genomsnitt
-bryts ned i reaktorn.`
+för en kontinuerligt matad rötkammare. Den anger hur lång tid det tar att byta ut hela reaktorvolymen, men används ofta som ett mått på hur länge substratet i genomsnitt
+spenderar i reaktorn.`
         }, // Slut på HRT-delen
 
         // -------------------------------------------------------
@@ -476,9 +472,7 @@ bryts ned i reaktorn.`
           id: "olr",
           title: "Organisk belastning (Organic Loading Rate, OLR)",
           intro: `Den organiska belastningen beskriver hur mycket VS (organiskt
-material) som matas in i rötkammaren per enhet reaktorvolym per dag. Det är
-den viktigaste parametern för att styra hur hårt processen
-belastas. OLR anges typiskt i kg VS per m³ per dygn.
+material) som matas in i rötkammaren per enhet reaktorvolym per dag, och beskriver hur hårt processen belastas. OLR anges typiskt i kg VS per m³ per dygn.
 
 OLR kan beräknas på två ekvivalenta sätt som visas nedan.`,
 
@@ -530,27 +524,23 @@ OLR kan beräknas på två ekvivalenta sätt som visas nedan.`,
 
               typical_range: {
                 min:         1.0,
-                max:         4.0,
+                max:         3.5,
                 unit:        "kg VS/(m³·d)",
                 low_text:    "Reaktorn är lågt belastad, vilket kan innebära att den tillgängliga reaktorvolymen inte utnyttjas effektivt.",
                 normal_text: "OLR är inom det typiska driftsintervallet.",
-                high_text:   "Reaktorn är hårt belastad. Det finns risk för störning pga. ackumulering av flyktiga fettsyror, VFA."
+                high_text:   "Reaktorn är hårt belastad. Det finns risk för störning eller låg nedbrytningsgrad."
               },
 
               educational_text: `Den organiska belastningen är en mycket viktig parameter
 för en biogasanläggning. Den definierar förhållandet mellan mängden inmatat
-substrat och reaktorns storlek.
-
-Här kunde man skriva något om olika typiska värden.`
+substrat och reaktorns storlek. Runt 1-3 kg VS/(m³·d) är vanligt för kontinuerligt matade processer baserade på lantbrukssubstrat.`
             },
 
             // Beräkningsväg 2: via VS-halt och HRT
             {
               id:    "olr_hrt",
               title: "Via VS-halt substrat och HRT",
-              intro: `OLR kan även beräknas direkt från substratets VS-halt och
-retentionstid, under antagandet att substratets densitet är
-ungefär 1 000 kg/m³. (Nu blir det multiplicerat med 10 eftersom vi anger VS i %... så det är 100 i nämnaren och 1000 i täljaren. Vet inte om man borde förklara det eller skriva ut ekvationen i två steg?).`,
+              intro: `OLR kan även beräknas direkt från substratets VS-halt och retentionstid, under antagandet att substratets densitet är ungefär 1 000 kg/m³.`,
 
               parameters: [
                 {
@@ -597,9 +587,10 @@ ungefär 1 000 kg/m³. (Nu blir det multiplicerat med 10 eftersom vi anger VS i 
     {
       id: "nitrogen",
       title: "Kväve",
-      intro: `Kväve är en viktig näring för mikroorganismer i biogasanläggningar. 
-Kväve används för att syntetisera protein och DNA, och påverkar därmed mikrobernas tillväxt och aktivitet. 
-För mycket kväve kan dock vara toxiskt för vissa mikroorganismer, vilket kan leda till störningar i processen.
+      intro: `Kväve (N) är ett viktigt näringsämne för mikroorganismer i biogasanläggningar. 
+      Det används för att bilda protein och DNA och är därmed avgörande för mikrobernas tillväxt och aktivitet. 
+      För mycket kväve kan dock vara toxiskt för vissa mikroorganismer och leda till störningar i processen. 
+      Kväveinnehållet är också viktigt för rötrestens kvalitet, eftersom det påverkar dess värde som gödningsmedel.
 
 Läs mer i <a href="assets/handbok.pdf?p=76#page=76">handboken s. 76–79</a>.`,
 
@@ -610,12 +601,12 @@ Läs mer i <a href="assets/handbok.pdf?p=76#page=76">handboken s. 76–79</a>.`,
         // -------------------------------------------------------
         {
           id: "ammonia-group",
-          title: "Total Ammonia Nitrogen (TAN) och fri ammoniak (NH₃)",
-          intro: `Den totala mängden ammoniumkväve (Total Ammonia Nitrogen, TAN) i reaktorn
+          title: "Total Ammonium Nitrogen (TAN) och fri ammoniak (NH₃)",
+          intro: `Den totala mängden ammoniumkväve (Total Ammonium Nitrogen, TAN) i reaktorn
 finns i två former: ammonium (NH₄⁺) och ojoniserad s.k. fri ammoniak (NH₃).
 Den fria ammoniaken är direkt hämmande för mikroorganismer. Andelen NH₃ av
-TAN beror på pH och temperatur — och eftersom pKa själv är temperaturberoende
-beräknas den i steget nedan, varefter NH₃-halten beräknas automatiskt.`,
+TAN beror på pH och temperatur — pKa som är temperaturberoende
+beräknas i steget nedan, varefter NH₃-halten beräknas automatiskt.`,
 
           // Delade indata — anges en gång, används av båda delekvationerna
           parameters: [
@@ -629,8 +620,8 @@ beräknas den i steget nedan, varefter NH₃-halten beräknas automatiskt.`,
             },
             {
               id:          "tan",
-              name:        "Ammoniumkväve (TAN)",
-              unit:        "mg N/L",
+              name:        "Ammoniumkväve (TAN/NH₄⁺-N)",
+              unit:        "mg N/kg",
               description: "Totalt ammoniumkväve uppmätt i reaktorn",
               //placeholder: 3000,
               min:         0
@@ -651,7 +642,7 @@ beräknas den i steget nedan, varefter NH₃-halten beräknas automatiskt.`,
             {
               id: "pka-temp",
               title: "pKa-temperaturkorrigering",
-              intro: `Syradissociationskonstanten (pKa) för ammonium–ammoniak-jämvikten anger hur stor andel av ammoniumkvävet som är i joniserad resp. ojoniserad form. pKa minskar
+              intro: `Syradissociationskonstanten (pKa) för ammonium–ammoniak-jämvikten anger hur stor andel av TAN som är i joniserad resp. ojoniserad form. pKa minskar
 med stigande temperatur. Vi måste beräkna pKa för att kunna beräkna fri ammoniak.`,
 
               formula_latex:   "pK_a = 0.09018 + \\frac{2729.92}{T + 273.15}",
@@ -662,19 +653,18 @@ med stigande temperatur. Vi måste beräkna pKa för att kunna beräkna fri ammo
               result_unit:     "",
               result_decimals: 3,
 
-              typical_range: {
+              /*typical_range: {
                 min:         8.50,
                 max:         9.30,
                 unit:        "—",
                 low_text:    "Mycket hög temperatur (termofilt eller däröver). Vid lägre pKa existerar en större andel av TAN som hämmande fri NH₃.",
                 normal_text: "pKa är inom det förväntade intervallet för mesofil (35 °C) till termofil (55 °C) rötning.",
                 high_text:   "Låg temperatur — pKa är högt, vilket innebär att en mindre andel av TAN existerar som fri NH₃. Psykrofil rötning eller rötning vid omgivningstemperatur."
-              },
+              },*/
 
               educational_text: `pKa för ammoniumjonen varierar med temperaturen enligt van't Hoff-ekvationen.
 Formeln som används här (Emerson m.fl., 1975) är välciterad i vatten- och
-avloppsbehandlingslitteraturen och ger noggranna resultat i det temperatur­
-intervall som är relevant för biogasanläggningar (15–60 °C).
+avloppsbehandlingslitteraturen och ger noggranna resultat i det temperatur­intervall som är relevant för biogasanläggningar (15–60 °C).
 
 Referensvärden:
   25 °C → pKa ≈ 9,25
@@ -689,27 +679,25 @@ Referensvärden:
               title: "Fri ammoniak (NH₃)",
               intro: `Med pKa beräknat ovan och uppmätt TAN och pH kan nu andelen fri ammoniak beräknas.`,
 
-              formula_latex:   "NH_3\\,(\\text{mg/L}) = \\frac{TAN}{1 + 10^{\\,pK_a - pH}}",
-              formula_filled:  "NH₃ = {tan} mg/L ÷ (1 + 10^({pKa} − {pH}))",
+              formula_latex:   "NH_3\\,(\\text{mg/kg}) = \\frac{TAN}{1 + 10^{\\,pK_a - pH}}",
+              formula_filled:  "NH₃ = {tan} mg/kg ÷ (1 + 10^({pKa} − {pH}))",
               formula_calc:    "tan / (1 + Math.pow(10, pKa - pH))",
 
               result_symbol:   "NH₃",
-              result_unit:     "mg N/L",
+              result_unit:     "mg N/kg",
               result_decimals: 0,
 
               typical_range: {
                 min:         0,
                 max:         400,
-                unit:        "mg N/L",
+                unit:        "mg N/kg",
                 low_text:    "",
-                normal_text: "Fri ammoniak inom normalspannet. Låg risk för processtörningar.",
-                high_text:   "Hög nivå av fri ammoniak. Detta kan leda till störning i processen."
+                normal_text: "",
+                high_text:   "Hög nivå av fri ammoniak. Detta kan leda till störning i processen, nogrann monitorering rekommenderas"
               },
 
               educational_text: `Hämning från fri ammoniak är en av de vanligaste orsakerna till
-processobalans i biogasanläggningar som tar emot kväverika substrat som hönsgödsel och slaktavfall (chansar här).
-
-Här kan man skriva något mer säkert.`
+processobalans i biogasanläggningar som tar emot kväverika substrat (t. ex. hönsgödsel och slaktavfall).`
             }
 
           ] // slut på delekvationer för ammoniakgruppen
@@ -723,9 +711,9 @@ Här kan man skriva något mer säkert.`
           title: "Kvävemineralisering (ML)",
           intro: `Under rötningsprocessen omvandlas en del av det organiska kvävet i substratet
 till ammoniumkväve (NH₄⁺-N) — en process som kallas kvävemineralisering. Graden
-av mineralisering anger hur stor andel av substratets organiska kväve som
-frigjorts som ammonium i rötresten. Detta är viktigt för att förstå rötresten
-som gödselmedel, eftersom mineraliserat kväve är direkt växttillgängligt.`,
+av mineralisering anger hur stor andel av substratets organiska kväve (ex. i form av proteiner) som
+frigjorts som ammonium i rötresten och är ett mått på effektiviteten i biogasprocessen. 
+Kvävemineraliseringen påverkar rötrestens gödselvärde, eftersom det mineraliserade kvävet kan tas upp direkt av växterna.`,
 
           formula_latex:   "ML\\,(\\%) = \\frac{NH_4^+\\text{-}N_{rötrest} - NH_4^+\\text{-}N_{substrat}}{\\text{Org-}N_{substrat}} \\times 100",
           formula_filled:  "ML = ({tan_digestate} − {tan_substrate}) ÷ {org_n_substrate} × 100",
@@ -769,12 +757,12 @@ som gödselmedel, eftersom mineraliserat kväve är direkt växttillgängligt.`,
             min:         20,
             max:         50,
             unit:        "%",
-            low_text:    "Låg mineralisering — en stor del av kvävet finns kvar i organisk form i rötresten. Kvävet är ännu inte växttillgängligt och kräver vidare nedbrytning i marken.",
+            low_text:    "Låg mineralisering — en stor del av kvävet finns kvar i organisk form i rötresten. Kväveföreningar kräver vidare nedbrytning i marken.",
             normal_text: "Mineraliseringsgraden är inom det typiska intervallet för anaerob rötning av lantbrukssubstrat.",
             high_text:   "Hög mineralisering — en stor andel av det organiska kvävet har omvandlats till ammonium. Rötresten har ett högt innehåll av direkt växttillgängligt kväve."
           },
 
-          educational_text: `Kvävemineraliseringen är ett ytterligare mått på effektiviteten i biogasprocessen. Värdet kan även användas för att beräkna hur mycket ammoniumkväve som kan bildas när man tillför ett nytt substrat till sin substratmix.`
+          /*educational_text: `Kvävemineraliseringen är ett ytterligare mått på effektiviteten i biogasprocessen. Värdet kan även användas för att beräkna hur mycket ammoniumkväve som kan bildas när man tillför ett nytt substrat till sin substratmix.`*/
         }
 
       ] // slut på ekvationer: Flik 2
@@ -788,8 +776,9 @@ som gödselmedel, eftersom mineraliserat kväve är direkt växttillgängligt.`,
       title: "Processutvärdering",
       intro: `Här beräknas nyckeltal för att utvärdera hur effektivt biogasanläggningen
 omvandlar substrat till metan. De två viktigaste måtten är den
-substratspecifika metanproduktionen (SMP) och den volumetriska
-metanproduktionen.`,
+specifika metanproduktionen (SMP) och den volumetriska
+metanproduktionen. 
+Processutvärdering omfattar även beräkning av utrötningsgrad (VS-reduktion, se fliken Driftparametrar) och kvävemineralisering (se fliken Kväve).`,
 
       equations: [
 
@@ -840,14 +829,14 @@ material (VS) som matas in.`,
             }
           ],
 
-          /*typical_range: {
-            min:         150,
+          typical_range: {
+            min:         100,
             max:         350,
             unit:        "m³ CH₄/ton VS",
-            low_text:    "Lågt SMP-värde. Anläggningen utnyttjar substratet dåligt — möjliga orsaker är kort retentionstid, processstörning eller att ett svårnedbrytbart substrat används.",
+            low_text:    "Lågt SMP-värde. Anläggningen utnyttjar substratet dåligt (möjliga orsaker är kort retentionstid eller processstörning), eller substrat med låg metanpotential används.",
             normal_text: "SMP är inom det typiska intervallet för gårdsbiogasanläggningar.",
             high_text:   "Högt SMP-värde. Substratet bryts ned effektivt, eller så matas ett lättnedbrytbart substrat med hög biogaspotential in."
-          },*/
+          },
 
           educational_text: `…`
         },
@@ -890,14 +879,14 @@ produceras per kubikmeter aktiv reaktorvolym och dag.`,
             }
           ],
 
-          /*typical_range: {
+          typical_range: {
             min:         0.3,
             max:         1.5,
             unit:        "m³ CH₄/(m³·d)",
-            low_text:    "Låg volumetrisk produktion. Reaktorutrymmet utnyttjas ineffektivt — reaktorn kan vara underdimensionerad i förhållande till biogaspotentialen, eller processen störs.",
+            low_text:    "Låg volumetrisk produktion. Reaktorvolymen utnyttjas ineffektivt — reaktorn kan vara överdimensionerad i förhållande till biogaspotentialen, eller processen störs.",
             normal_text: "MP_vol är inom det typiska intervallet för mesofila gårdsbiogasanläggningar.",
-            high_text:   "Hög volumetrisk produktion. Reaktorn belastas hårt — kontrollera att OLR och processtabilitet är godtagbara."
-          },*/
+            high_text:   "Hög volumetrisk produktion. Reaktorn belastas hårt — kontrollera att OLR, SMP och processtabilitet är godtagbara."
+          },
 
           educational_text: `Den volumetriska metanproduktionen är ett praktiskt nyckeltal för att
 bedöma om reaktorn dimensionerats rätt i förhållande till tillgängligt
@@ -918,11 +907,12 @@ substrat.
       id:    "codigestion",
       type:  "codigestion",
       title: "Samrötning",
-      intro: `Samrötning innebär att två eller flera substrat rötas tillsammans i samma biogasreaktor. Genom att kombinera substrat kan man förbättra C/N-kvoten, öka biogasutbytet, …
+      intro: `Samrötning innebär att två eller flera substrat rötas tillsammans i samma biogasreaktor. Genom att kombinera substrat kan man förbättra TS-halt, C/N-kvot och öka metanutbytet.
 
-Välj ett primärt substrat och ange andelen av ett sekundärt substrat för att se hur blandningen påverkar torrsubstanshalt, VS-halt, C/N-kvot och metanproduktion. Alla beräkningar avser ett intag på 1 ton (1 000 kg) våtvikt.
 
-Här bör man väl säga något om begräsningarna med beräkningen redan nu?`,
+Välj ett primärt substrat och ange andelen av ett sekundärt substrat för att se hur blandningen påverkar TS- och VS-halt, C/N-kvot och metanpotential (BMP). BMP beräknas teoretiskt som summan av metanpotentialen för respektive substrat i proportion till inblandad mängd, utan att ta hänsyn till eventuella synergieffekter vid samrötning.  Alla beräkningar avser ett intag på 1 ton (1 000 kg) våtvikt.
+
+Använd förvalda värden, justera dem eller definiera ett eget substrat med specifika egenskaper.`,
 
       // -----------------------------------------------------------
       // Standardinställningar
@@ -995,7 +985,7 @@ Här bör man väl säga något om begräsningarna med beräkningen redan nu?`,
 
         // Kommentarsruta
         no_warnings: "Inga varningar – substratblandningen ser rimlig ut utifrån de valda parametrarna.",
-        disclaimer:  "Beräkningarna är förenklade och baserade på litteraturvärden från bl.a. Avfall Sveriges handbok <a href='https://www.biogodsel.se/media/1huf5snm/u2009-14_substrathandbok.pdf' target='_blank' rel='noopener noreferrer'>Substrathandbok för biogasproduktion</a>. Verkliga resultat varierar beroende på substratets kvalitet, driftparametrar, m.m.",
+        disclaimer:  "Beräkningarna är förenklade och förvalda värden är baserade på litteraturvärden från bl.a. SGCs handbok <a href='https://www.osti.gov/etdeweb/servlets/purl/948934' target='_blank' rel='noopener noreferrer'>Substrathandbok för biogasproduktion (Rapport SGC 200)</a>. Verkliga värden varierar beroende på substratets kvalitet, driftparametrar, m.m.",
       },
 
       // -----------------------------------------------------------
@@ -1014,22 +1004,22 @@ Här bör man väl säga något om begräsningarna med beräkningen redan nu?`,
       warnings: [
         // Monosubstratvarninga
         { context: "mono", variable: "cn_mono",     operator: "<", threshold: 15,
-          text: "C/N-kvoten för {name} är {value} (< 15) – risk för ammoniakinhibering vid monosubstrat." },
+          text: "C/N-kvoten för {name} är {value} (< 15) – risk för ammoniakinhibering." },
         { context: "mono", variable: "cn_mono",     operator: ">", threshold: 30,
           text: "C/N-kvoten för {name} är {value} (> 30) – kvävebegränsning kan försämra processen." },
         { context: "mono", variable: "ts_mono_pct", operator: ">", threshold: 15,
-          text: "TS-halten ({value} %) är hög för ett monosubstrat – kan kräva spädning." },
+          text: "TS-halten ({value} %) är hög för våtrötning – kan kräva spädning." },
         // Samrötningsvarningar
         { context: "codig", variable: "ts_codig_pct",  operator: ">", threshold: 15,
-          text: "TS-halten i blandningen är {value} % (> 15 %) – risk för dålig omrörning och bryggor i reaktorn." },
+          text: "TS-halten i blandningen är {value} % (> 15 %) – risk för bl. a. ineffektiv omrörning." },
         { context: "codig", variable: "cn_codig",       operator: "<", threshold: 15,
           text: "C/N-kvoten i blandningen är {value} (< 15) – förhöjd risk för ammoniakinhibering." },
         { context: "codig", variable: "cn_codig",       operator: ">", threshold: 30,
-          text: "C/N-kvoten i blandningen är {value} (> 30) – kvävebegränsning kan begränsa gasproduktionen." },
+          text: "C/N-kvoten i blandningen är {value} (> 30) – kvävebegränsning kan försämra processen." },
         { context: "codig", variable: "ch4_change_pct", operator: ">", threshold: 10,
-          text: "Metanproduktionen ökar med {abs_value} % jämfört med monosubstrat – positiv synergieffekt." },
+          text: "Teoretisk metanproduktion ökar med {abs_value} % jämfört med monosubstrat." },
         { context: "codig", variable: "ch4_change_pct", operator: "<", threshold: -5,
-          text: "Metanproduktionen minskar med {abs_value} % jämfört med monosubstrat – kontrollera substratandelen." },
+          text: "Teoretisk metanproduktion minskar med {abs_value} % jämfört med monosubstrat – kontrollera substratandelen." },
       ],
     }
 
