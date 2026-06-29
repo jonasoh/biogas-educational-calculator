@@ -761,6 +761,60 @@ footer {
   border-radius: 4px;
 }
 
+.codig-custom-panel {
+  margin-top: 0.75rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #dbe2ea;
+  border-radius: 0.7rem;
+  background: linear-gradient(180deg, #f8fafc 0%, #f3f7f2 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+}
+
+.codig-custom-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  margin-bottom: 0.65rem;
+  color: #234a2e;
+}
+
+.codig-custom-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+}
+
+.codig-custom-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.55rem;
+  background: #fff;
+}
+
+.codig-custom-label {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.codig-custom-field input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.45rem;
+  font: inherit;
+  background: #fcfdff;
+}
+
+.codig-custom-field input:focus {
+  outline: none;
+  border-color: #2a6b3c;
+  box-shadow: 0 0 0 3px rgba(42, 107, 60, 0.12);
+}
+
 .codig-empty-hint {
   color: #9ca3af;
   font-size: 0.85rem;
@@ -886,6 +940,7 @@ footer {
 @media (max-width: 700px) {
   .codig-pickers { grid-template-columns: 1fr; }
   .codig-charts  { grid-template-columns: 1fr; }
+  .codig-custom-grid { grid-template-columns: 1fr; }
 }
 
 /* --- Print ------------------------------------------------ */

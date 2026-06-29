@@ -17,9 +17,28 @@ function buildCodigestionPanel(panelEl, tab) {
   const C = tab.colors   || { substrate1: "#2a6b3c", substrate2: "#e07b35" };
   const D = tab.defaults || { substrate1: "notflytgodsel", proportion2: 30 };
 
+  function onChange() {
+    const s1 = getSubstrate(sel1.value) || getCustomSubstrateData(customPanel1, L);
+    const s2 = getSubstrate(sel2.value) || getCustomSubstrateData(customPanel2, L);
+    const p2 = s2 ? Math.max(1, Math.min(99, parseFloat(inp2.value) || D.proportion2)) : 0;
+
+    renderProps(propDisplay1, s1, L, false);
+    renderProps(propDisplay2, s2, L, true);
+
+    inp2.disabled = sel2.value === "";
+    if (sel2.value === "") inp2.value = D.proportion2;
+
+    const calc = calculateCodigestion(s1, s2, p2);
+    renderResultsTable(tableBody, calc, s1, s2, L);
+    renderCommentary(commentaryBox, tab, calc, s1, s2, L);
+    renderChart1(chartDiv1, calc, s1, s2, L, C);
+    renderChart2(chartDiv2, calc, s2, L, C);
+    renderChart3(chartDiv3, calc, s2, L, C);
+  }
+
   // Substrate pickers
-  const { pickersEl, sel1, propDisplay1, inp2, sel2, propDisplay2 } =
-    buildSubstratePickers(L, D);
+  const { pickersEl, sel1, propDisplay1, inp2, sel2, propDisplay2, customPanel1, customPanel2 } =
+    buildSubstratePickers(L, D, onChange);
   panelEl.appendChild(pickersEl);
 
   // Charts (must be in DOM before Plotly renders)
@@ -33,31 +52,6 @@ function buildCodigestionPanel(panelEl, tab) {
   // Commentary box
   const commentaryBox = buildCommentaryBox();
   panelEl.appendChild(commentaryBox);
-
-  // Wire events
-  function onChange() {
-    const s1 = getSubstrate(sel1.value);
-    const s2 = getSubstrate(sel2.value);
-    const p2 = s2 ? Math.max(1, Math.min(99, parseFloat(inp2.value) || D.proportion2)) : 0;
-
-    renderProps(propDisplay1, s1, L, false);
-    renderProps(propDisplay2, s2, L, true);
-
-    // Sync proportion inputs
-    inp2.disabled = !s2;
-    if (!s2) inp2.value = D.proportion2;
-
-    const calc = calculateCodigestion(s1, s2, p2);
-    renderResultsTable(tableBody, calc, s1, s2, L);
-    renderCommentary(commentaryBox, tab, calc, s1, s2, L);
-    renderChart1(chartDiv1, calc, s1, s2, L, C);
-    renderChart2(chartDiv2, calc, s2, L, C);
-    renderChart3(chartDiv3, calc, s2, L, C);
-  }
-
-  sel1.addEventListener("change", onChange);
-  sel2.addEventListener("change", onChange);
-  inp2.addEventListener("input", onChange);
 
   // Pre-select substrate 1 default
   sel1.value = D.substrate1;
@@ -87,7 +81,7 @@ function getSubstrate(id) {
 
 /* ---- Build substrate pickers ----------------------------- */
 
-function buildSubstratePickers(L, D) {
+function buildSubstratePickers(L, D, onChange) {
   const pickersEl = document.createElement("div");
   pickersEl.className = "codig-pickers";
 
@@ -100,6 +94,9 @@ function buildSubstratePickers(L, D) {
   sel1.className = "codig-select";
   populateSubstrateSelect(sel1, false, L);
   card1.appendChild(sel1);
+
+  const customPanel1 = buildCustomSubstratePanel(L);
+  card1.appendChild(customPanel1);
 
   const prop1Row = document.createElement("div");
   prop1Row.className = "codig-proportion-row";
@@ -125,6 +122,9 @@ function buildSubstratePickers(L, D) {
   populateSubstrateSelect(sel2, true, L);
   card2.appendChild(sel2);
 
+  const customPanel2 = buildCustomSubstratePanel(L);
+  card2.appendChild(customPanel2);
+
   const prop2Row = document.createElement("div");
   prop2Row.className = "codig-proportion-row";
   prop2Row.innerHTML =
@@ -142,24 +142,51 @@ function buildSubstratePickers(L, D) {
   const inp2 = prop2Row.querySelector("input");
   const inp1 = prop1Row.querySelector("input");
 
-  // Keep inp1 synced as mirror of inp2
-  inp2.addEventListener("input", () => {
-    const v = Math.max(1, Math.min(99, parseFloat(inp2.value) || D.proportion2));
-    inp1.value = 100 - v;
-  });
+  const syncCustomPanel = (select, panel) => {
+    panel.hidden = select.value !== "custom";
+  };
 
-  sel2.addEventListener("change", () => {
-    const s2 = getSubstrate(sel2.value);
-    inp2.disabled = !s2;
-    if (!s2) {
+  const syncProportionInputs = () => {
+    const hasSecond = sel2.value !== "";
+    inp2.disabled = !hasSecond;
+    if (!hasSecond) {
       inp2.value = D.proportion2;
       inp1.value = 100 - D.proportion2;
     } else {
       inp1.value = 100 - (parseFloat(inp2.value) || D.proportion2);
     }
+  };
+
+  // Keep inp1 synced as mirror of inp2
+  inp2.addEventListener("input", () => {
+    const v = Math.max(1, Math.min(99, parseFloat(inp2.value) || D.proportion2));
+    inp1.value = 100 - v;
+    onChange();
   });
 
-  return { pickersEl, sel1, propDisplay1, inp2, sel2, propDisplay2 };
+  sel1.addEventListener("change", () => {
+    syncCustomPanel(sel1, customPanel1);
+    onChange();
+  });
+
+  sel2.addEventListener("change", () => {
+    syncCustomPanel(sel2, customPanel2);
+    syncProportionInputs();
+    onChange();
+  });
+
+  [customPanel1, customPanel2].forEach(panel => {
+    panel.querySelectorAll("input").forEach(input => {
+      input.addEventListener("input", onChange);
+      input.addEventListener("change", onChange);
+    });
+  });
+
+  syncCustomPanel(sel1, customPanel1);
+  syncCustomPanel(sel2, customPanel2);
+  syncProportionInputs();
+
+  return { pickersEl, sel1, propDisplay1, inp2, sel2, propDisplay2, customPanel1, customPanel2 };
 }
 
 function populateSubstrateSelect(sel, includeBlank, L) {
@@ -175,17 +202,88 @@ function populateSubstrateSelect(sel, includeBlank, L) {
     opt.textContent = s.name;
     sel.appendChild(opt);
   });
+  const customOpt = document.createElement("option");
+  customOpt.value = "custom";
+  customOpt.textContent = L.custom_substrate_option;
+  sel.appendChild(customOpt);
+}
+
+function buildCustomSubstratePanel(L) {
+  const panel = document.createElement("div");
+  panel.className = "codig-custom-panel";
+  panel.hidden = true;
+
+  const title = document.createElement("div");
+  title.className = "codig-custom-title";
+  title.textContent = L.custom_substrate_heading;
+  panel.appendChild(title);
+
+  const grid = document.createElement("div");
+  grid.className = "codig-custom-grid";
+
+  const fields = [
+    { key: "ts", label: L.custom_ts_label, unit: L.custom_ts_unit, min: 0, max: 100, step: 0.1, placeholder: "20" },
+    { key: "vs_ts", label: L.custom_vs_label, unit: L.custom_vs_unit, min: 0, max: 100, step: 0.1, placeholder: "80" },
+    { key: "cn", label: L.custom_cn_label, unit: L.custom_cn_unit, min: 0, max: 1000, step: 0.1, placeholder: "25" },
+    { key: "bmp", label: L.custom_bmp_label, unit: L.custom_bmp_unit, min: 0, max: 1000, step: 1, placeholder: "300" },
+  ];
+
+  fields.forEach(field => {
+    const fieldEl = document.createElement("label");
+    fieldEl.className = "codig-custom-field";
+    fieldEl.innerHTML = `
+      <span class="codig-custom-label">${escapeHtml(field.label)}${field.unit ? ` (${escapeHtml(field.unit)})` : ""}</span>
+      <input type="number" data-custom-field="${field.key}" min="${field.min}" max="${field.max}" step="${field.step}" placeholder="${field.placeholder}">
+    `;
+    grid.appendChild(fieldEl);
+  });
+
+  panel.appendChild(grid);
+  return panel;
+}
+
+function getCustomSubstrateData(panel, L) {
+  if (!panel || panel.hidden) return null;
+
+  const values = {};
+  const inputs = panel.querySelectorAll("input[data-custom-field]");
+  const rangeRules = {
+    ts: { min: 0, max: 100 },
+    vs_ts: { min: 0, max: 100 },
+    cn: { min: 0, max: 1000 },
+    bmp: { min: 0, max: 1000 },
+  };
+
+  for (const input of inputs) {
+    const key = input.getAttribute("data-custom-field");
+    const raw = input.value.trim();
+    const val = parseFloat(raw);
+    const bounds = rangeRules[key];
+
+    if (raw === "" || isNaN(val) || (bounds && (val < bounds.min || val > bounds.max))) {
+      return null;
+    }
+    values[key] = val;
+  }
+
+  return {
+    id: "custom",
+    name: L.custom_substrate_name,
+    ts: values.ts,
+    vs_ts: values.vs_ts / 100,
+    bmp: values.bmp,
+    cn: values.cn,
+    note: L.custom_substrate_note,
+  };
 }
 
 function renderProps(container, substrate, L, isSecond) {
   container.innerHTML = "";
   if (!substrate) {
-    if (isSecond) {
-      const hint = document.createElement("div");
-      hint.className = "codig-empty-hint";
-      hint.textContent = L.empty_hint_s2;
-      container.appendChild(hint);
-    }
+    const hint = document.createElement("div");
+    hint.className = "codig-empty-hint";
+    hint.textContent = isSecond ? L.empty_hint_s2 : L.custom_substrate_empty_hint;
+    container.appendChild(hint);
     return;
   }
   const pills = [
