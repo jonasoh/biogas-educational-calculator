@@ -666,7 +666,7 @@ Referensvärden:
                 unit:        "mg N/kg",
                 low_text:    "",
                 normal_text: "",
-                high_text:   "Hög nivå av fri ammoniak. Detta kan leda till störning i processen, nogrann monitorering rekommenderas"
+                high_text:   "Hög nivå av fri ammoniak. Detta kan leda till störning i processen, nogrann monitorering rekommenderas."
               },
 
               educational_text: `Hämning p.g.a. fri ammoniak är en av de vanligaste orsakerna till processobalans i biogasanläggningar som tar emot kväverika substrat (t. ex. hönsgödsel och slakteriavfall).`
@@ -773,7 +773,7 @@ Referensvärden:
               id:          "v_gas",
               name:        "Total gasvolym",
               unit:        "m³ gas",
-              description: "Total producerad gasvolym under perioden (normalt per dygn)",
+              description: "Total producerad gasvolym under perioden (per dygn).",
               min:         0,
               step:        10,
               decimals:    0
@@ -782,16 +782,16 @@ Referensvärden:
               id:          "methane_pct",
               name:        "Metanhalt",
               unit:        "%",
-              description: "Metandelen i den producerade gasen",
+              description: "Andelen metan i den producerade gasen.",
               min:         0,
               step:        1,
               decimals:    1
             },
             {
               id:          "m_wet_smp",
-              name:        "Våtvikt per dag",
+              name:        "Ingående våtvikt",
               unit:        "ton",
-              description: "Mängd substrat som matas in under samma period",
+              description: "Mängd substrat som matas in under samma period (per dygn).",
               min:         0.001,
               step:        1,
               decimals:    1
@@ -800,7 +800,7 @@ Referensvärden:
               id:          "vs_smp",
               name:        "VS-halt substrat",
               unit:        "%",
-              description: "Procentandel VS i det inmatade substratet (av våtvikt)",
+              description: "Procentandel VS i det inmatade substratet (av våtvikt).",
               min:         0.001,
               step:        1,
               decimals:    1
@@ -816,7 +816,7 @@ Referensvärden:
             high_text:   "Högt SMP-värde. Substratet bryts ned effektivt, eller så matas ett lättnedbrytbart substrat med hög biogaspotential in."
           },
 
-          educational_text: `…`
+          educational_text: `SMP är ett viktigt mått för att jämföra metanproduktionen mot andra anläggningar och litteraturvärden. Det ger en indikation på hur väl processen fungerar och hur effektivt substratet utnyttjas.`
         },
 
         // -------------------------------------------------------
@@ -840,7 +840,7 @@ Referensvärden:
               id:          "v_gas_daily",
               name:        "Daglig gasvolym",
               unit:        "m³ gas/d",
-              description: "Total gasproduktion per dygn",
+              description: "Total gasproduktion per dygn.",
               min:         0,
               step:        10,
               decimals:    0
@@ -849,7 +849,7 @@ Referensvärden:
               id:          "methane_pct_daily",
               name:        "Metanhalt",
               unit:        "%",
-              description: "Metandelen i den producerade gasen",
+              description: "Andelen metan i den producerade gasen.",
               min:         0,
               step:        1,
               decimals:    1
@@ -858,7 +858,7 @@ Referensvärden:
               id:          "v_reactor",
               name:        "Aktiv reaktorvolym",
               unit:        "m³",
-              description: "Flytande volym i rötkammaren",
+              description: "Volym av material i rötkammaren.",
               min:         0.001,
               step:        10,
               decimals:    0
