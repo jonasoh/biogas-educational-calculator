@@ -143,7 +143,7 @@ const CALCULATOR_CONTENT = {
     {
       id: "biomass-loading",
       title: "Driftparametrar",
-      intro: `I detta avsnitt beräknas grundläggande parametrar för att karakterisera biogassubstrat och -processer. 
+      intro: `I detta avsnitt beräknas grundläggande parametrar för att karakterisera substrat och biogasprocesser. 
       <br><br>
 Torrsubstansen (Total Solids, TS) anger den fasta fraktionen i materialet, medan organisk substans (Volatile Solids, VS) visar hur stor del av torrsubstansen som är biologiskt nedbrytbar. 
 <br><br>
@@ -760,9 +760,9 @@ Referensvärden:
           title: "Specifik metanproduktion (SMP)",
           intro: `SMP mäter hur mycket metan anläggningen producerar per enhet organiskt material (VS) som matas in.`,
 
-          formula_latex:   "SMP = \\frac{V_{CH_4}}{m_{våt} \\times VS\\,(\\%)} \\times 100",
-          formula_filled:  "SMP = {v_ch4} m³ CH₄ ÷ ({m_wet_smp} ton × {vs_smp} %) × 100",
-          formula_calc:    "v_ch4 / (m_wet_smp * vs_smp) * 100",
+          formula_latex:   "SMP = \\frac{V_{gas} \\times CH_4\\,(\\%)}{m_{våt} \\times VS\\,(\\%)} \\times 100",
+          formula_filled:  "SMP = ({v_gas} m³ gas × {methane_pct} % CH₄ ÷ 100) ÷ ({m_wet_smp} ton × {vs_smp} %) × 100",
+          formula_calc:    "v_gas * methane_pct / 100 / (m_wet_smp * vs_smp) * 100",
 
           result_symbol:   "SMP",
           result_unit:     "m³ CH₄/ton VS",
@@ -770,13 +770,22 @@ Referensvärden:
 
           parameters: [
             {
-              id:          "v_ch4",
-              name:        "Metanvolym",
-              unit:        "m³ CH₄",
-              description: "Uppmätt metanproduktion under perioden (normalt per dygn)",
+              id:          "v_gas",
+              name:        "Total gasvolym",
+              unit:        "m³ gas",
+              description: "Total producerad gasvolym under perioden (normalt per dygn)",
               min:         0,
               step:        10,
               decimals:    0
+            },
+            {
+              id:          "methane_pct",
+              name:        "Metanhalt",
+              unit:        "%",
+              description: "Metandelen i den producerade gasen",
+              min:         0,
+              step:        1,
+              decimals:    1
             },
             {
               id:          "m_wet_smp",
@@ -818,9 +827,9 @@ Referensvärden:
           title: "Volumetrisk metanproduktion",
           intro: `Den volumetriska metanproduktionen anger hur mycket metan som produceras per kubikmeter aktiv reaktorvolym och dag.`,
 
-          formula_latex:   "MP_{vol} = \\frac{V_{CH_4}}{V_R}",
-          formula_filled:  "MP_vol = {v_ch4_daily} m³ CH₄/d ÷ {v_reactor} m³",
-          formula_calc:    "v_ch4_daily / v_reactor",
+          formula_latex:   "MP_{vol} = \\frac{V_{gas} \\times CH_4\\,(\\%)}{V_R}",
+          formula_filled:  "MP_vol = ({v_gas_daily} m³ gas × {methane_pct_daily} % CH₄ ÷ 100) ÷ {v_reactor} m³",
+          formula_calc:    "v_gas_daily * methane_pct_daily / 100 / v_reactor",
 
           result_symbol:   "MP_vol",
           result_unit:     "m³ CH₄/(m³·d)",
@@ -828,13 +837,22 @@ Referensvärden:
 
           parameters: [
             {
-              id:          "v_ch4_daily",
-              name:        "Daglig metanvolym",
-              unit:        "m³ CH₄/d",
-              description: "Uppmätt metanproduktion per dygn",
+              id:          "v_gas_daily",
+              name:        "Daglig gasvolym",
+              unit:        "m³ gas/d",
+              description: "Total gasproduktion per dygn",
               min:         0,
               step:        10,
               decimals:    0
+            },
+            {
+              id:          "methane_pct_daily",
+              name:        "Metanhalt",
+              unit:        "%",
+              description: "Metandelen i den producerade gasen",
+              min:         0,
+              step:        1,
+              decimals:    1
             },
             {
               id:          "v_reactor",
