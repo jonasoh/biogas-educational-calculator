@@ -144,8 +144,9 @@ const CALCULATOR_CONTENT = {
       id: "biomass-loading",
       title: "Driftparametrar",
       intro: `I detta avsnitt beräknas grundläggande parametrar för att karakterisera biogassubstrat och -processer. 
+      <br><br>
 Torrsubstansen (Total Solids, TS) anger den fasta fraktionen i materialet, medan organisk substans (Volatile Solids, VS) visar hur stor del av torrsubstansen som är biologiskt nedbrytbar. 
-
+<br><br>
 Organisk belastning (Organic Loading Rate, OLR) och
 hydraulisk retentionstid eller uppehållstid (Hydraulic Retention Time, HRT) anger sedan hur mycket reaktorn belastas och hur länge materialet
 uppehåller sig inne i rötkammaren.
@@ -168,13 +169,12 @@ Du kan läsa mer om dessa beräkningar i <a href="assets/handbok.pdf?p=72#page=7
           id:    "dry-matter",
           title: "Torrsubstansbestämning",
           intro: `Våtvikt, torrvikt och askvikt bestäms alltid tillsammans från samma laboratorieprov.
-
+<br><br>
 Man väger det färska provet, torkar det vid 105°C och väger igen (ger
 torrsubstans, TS), glödgar sedan det torra provet vid 350-550°C och väger
 askan (ger glödförlusten, VS). 
-
 Ange de tre massorna nedan för att beräkna TS- och VS-halt.
-
+<br><br>
 (I vissa fall mäts enbart torrsubstansen av laboratoriet. Om du inte har askvikt kan du lämna detta fält tomt — VS beräknas då inte. Alternativt kan du ange en uppskattad askhalt för att få ett ungefärligt VS-värde.)`,
 
           // Delade indata — anges en gång, används av alla delekvationer nedan
@@ -250,6 +250,7 @@ och jämförbara resultat.*/
               id:    "vs",
               title: "Organisk substans (VS)",
               intro: `Volatile Solids (VS) representerar den organiska fraktionen av materialet — den del som i teorin kan brytas ned av mikroorganismer för att producera biogas. 
+              <br><br>
               (Askan som återstår efter glödgning är den oorganiska fraktionen (mineralfraktionen) som inte är biologiskt nedbrytbar.)`,
 
               formula_latex:   "VS\\,(\\%) = \\frac{m_{torr} - m_{aska}}{m_{våt}} \\times 100",
@@ -270,11 +271,11 @@ och jämförbara resultat.*/
               },*/
 
               educational_text: `Volatile Solids (VS) är den viktigaste parametern för att bedöma biogaspotential och utvärdera utrötningsgrad och metanutbyte.
-
+<br><br>
 Endast den organiska fraktionen av ett substrat kan omvandlas till biogas
 av anaeroba mikroorganismer; mineralfraktionen (sand, salter, etc.)
 passerar reaktorn oförändrad och ansamlas som fasta ämnen i rötresten.
-
+<br><br>
 Det specifika metanutbytet (SMP) metanpotentialen (BMP) för ett substrat anges alltid per kg VS, inte per kg TS eller per kg färskvikt.
 Detta möjliggör rättvis jämförelse mellan substrat med olika fukt- och
 askhalter.`
@@ -285,7 +286,7 @@ askhalter.`
               id:    "vsts",
               title: "VS (% av TS)",
               intro: `VS som % av TS anger hur stor andel av torrsubstansen som är organisk. Den beräknas automatiskt från TS- och VS-värdena ovan.
-
+<br><br>
               Observera att VS/TS alltid måste vara ≤ 100 %. Om din beräkning ger ett värde över 100 %, kontrollera laboratoriemätningarna — askans massa kan inte överstiga torrmassan.`,
 
               formula_latex:   "\\frac{VS}{TS}\\,(\\%) = \\frac{VS}{TS} \\times 100",
@@ -307,7 +308,7 @@ askhalter.`
               }*/,
 
               educational_text: `Typiska värden sträcker sig från ungefär 60 % för rötrest eller material med stor andel grus och jord, upp till >95 % för exempelvis rena energigrödor som majsensilage eller odlade gräs. I det senare fallet är i princip all torrsubstans organiskt material som kan brytas ned till biogas.
-
+<br><br>
 Obs! Om endast torrsubstanshalten (TS) är känd och askhalten saknas kan VS-halten och VS/TS-kvoten inte beräknas. I sådana fall måste VS uppskattas utifrån tabell- eller schablonvärden. Som en grov tumregel kan man för många organiska substrat anta att VS utgör cirka 80-90% av TS.`
             }
 
@@ -320,8 +321,7 @@ Obs! Om endast torrsubstanshalten (TS) är känd och askhalten saknas kan VS-hal
         {
           id: "degradation-efficiency",
           title: "Utrötningsgrad",
-          intro: `Utrötningsgraden eller VS reduktionen anger hur stor del av det organiska materialet (VS) i substratet som brutits ned och omvandlats till biogas. 
-Det är skillnaden i organiskt innehåll mellan ingående och utgående material, angiven i procent.`,
+          intro: `Utrötningsgraden eller VS reduktionen anger hur stor del av det organiska materialet (VS) i substratet som brutits ned och omvandlats till biogas. Det är skillnaden i organiskt innehåll mellan ingående och utgående material, angiven i procent.`,
 
           formula_latex:   "E\\,(\\%) = \\left(1 - \\frac{TS_{utgående} \\times VS_{utgående}}{TS_{substrat} \\times VS_{substrat}}\\right) \\times 100",
           formula_filled:  "E = (1 − ({ts_out} × {vs_out}) ÷ ({ts_in} × {vs_in})) × 100",
@@ -380,10 +380,9 @@ Det är skillnaden i organiskt innehåll mellan ingående och utgående material
           },*/
 
           educational_text: `Utrötningsgraden/VS reduktionen är ett viktigt mått på hur effektivt rötkammaren bryter
-ned det organiska materialet. Typiska värden för välskötta anläggningar som rötar lantbrukssubstrat ligger mellan 30 och 70%, beroende på substrat och driftbetingelser.
-Lättnedbrytbara substrat som matavfall och energigrödor ger ofta högre
+ned det organiska materialet. Typiska värden för välfungerande anläggningar som rötar lantbrukssubstrat ligger mellan 30 och 70%, beroende på substrat och driftbetingelser. Lättnedbrytbara substrat som matavfall och energigrödor ger ofta högre
 utrötningsgrad än exempelvis halm och fastgödsel.
-
+<br><br>
 Observera att formeln bygger på ett förenklat antagande om att volymen in
 och ut är densamma. I praktiken minskar volymen till följd av
 gasbildningen, vilket innebär att den beräknade utrötningsgraden är en
@@ -452,7 +451,7 @@ spenderar i reaktorn.`
           title: "Organisk belastning (Organic Loading Rate, OLR)",
           intro: `Den organiska belastningen beskriver hur mycket VS (organiskt
 material) som matas in i rötkammaren per enhet reaktorvolym per dag, och beskriver hur hårt processen belastas. OLR anges typiskt i kg VS per m³ per dygn.
-
+<br><br>
 OLR kan beräknas på två ekvivalenta sätt som visas nedan.`,
 
           parameters: [], // Inga delade parametrar — varje beräkningsväg har egna
@@ -510,9 +509,7 @@ OLR kan beräknas på två ekvivalenta sätt som visas nedan.`,
                 high_text:   "Reaktorn är hårt belastad. Det finns risk för störning eller låg nedbrytningsgrad."
               },
 
-              educational_text: `Den organiska belastningen är en mycket viktig parameter
-för en biogasanläggning. Den definierar förhållandet mellan mängden inmatat
-substrat och reaktorns storlek. Runt 1-3 kg VS/(m³·d) är vanligt för kontinuerligt matade processer baserade på lantbrukssubstrat.`
+              educational_text: `Den organiska belastningen är en mycket viktig parameter för en biogasanläggning. Den definierar förhållandet mellan mängden inmatat substrat och reaktorns storlek. Runt 1-3 kg VS/(m³·d) är vanligt för kontinuerligt matade processer baserade på lantbrukssubstrat.`
             },
 
             // Beräkningsväg 2: via VS-halt och HRT
@@ -566,9 +563,10 @@ substrat och reaktorns storlek. Runt 1-3 kg VS/(m³·d) är vanligt för kontinu
     {
       id: "nitrogen",
       title: "Kväve",
-      intro: `Kväve (N) är ett viktigt näringsämne för mikroorganismer i biogasanläggningar. 
-      Det används för att bilda protein och DNA och är därmed avgörande för mikrobernas tillväxt och aktivitet. 
+      intro: `Kväve (N) är ett viktigt näringsämne för mikroorganismer i biogasanläggningar. Det används för att bilda protein och DNA och är därmed avgörande för mikrobernas tillväxt och aktivitet. 
+      <br><br>
       För mycket kväve kan dock vara toxiskt för vissa mikroorganismer och leda till störningar i processen. 
+      <br><br>
       Kväveinnehållet är också viktigt för rötrestens kvalitet, eftersom det påverkar dess värde som gödningsmedel.
 
 Läs mer i <a href="assets/handbok.pdf?p=76#page=76">handboken s. 76–79</a>.`,
@@ -581,11 +579,10 @@ Läs mer i <a href="assets/handbok.pdf?p=76#page=76">handboken s. 76–79</a>.`,
         {
           id: "ammonia-group",
           title: "Total Ammonium Nitrogen (TAN) och fri ammoniak (NH₃)",
-          intro: `Den totala mängden ammoniumkväve (Total Ammonium Nitrogen, TAN) i reaktorn
-finns i två former: ammonium (NH₄⁺) och ojoniserad s.k. fri ammoniak (NH₃).
-Den fria ammoniaken är direkt hämmande för mikroorganismer. Andelen NH₃ av
-TAN beror på pH och temperatur — pKa som är temperaturberoende
-beräknas i steget nedan, varefter NH₃-halten beräknas automatiskt.`,
+          intro: `Den totala mängden ammoniumkväve (Total Ammonium Nitrogen, TAN) i reaktorn finns i två former: ammonium (NH₄⁺) och ojoniserad s.k. fri ammoniak (NH₃).
+          Den fria ammoniaken är direkt hämmande för mikroorganismer. 
+          <br><br>
+          Andelen NH₃ av TAN beror på pH och temperatur — pKa som är temperaturberoende beräknas i steget nedan, varefter NH₃-halten beräknas automatiskt.`,
 
           // Delade indata — anges en gång, används av båda delekvationerna
           parameters: [
@@ -621,8 +618,7 @@ beräknas i steget nedan, varefter NH₃-halten beräknas automatiskt.`,
             {
               id: "pka-temp",
               title: "pKa-temperaturkorrigering",
-              intro: `Syradissociationskonstanten (pKa) för ammonium–ammoniak-jämvikten anger hur stor andel av TAN som är i joniserad resp. ojoniserad form. pKa minskar
-med stigande temperatur. Vi måste beräkna pKa för att kunna beräkna fri ammoniak.`,
+              intro: `Syradissociationskonstanten (pKa) för ammonium–ammoniak-jämvikten anger hur stor andel av TAN som är i joniserad resp. ojoniserad form. pKa minskar med stigande temperatur. Vi måste beräkna pKa för att kunna beräkna fri ammoniak.`,
 
               formula_latex:   "pK_a = 0.09018 + \\frac{2729.92}{T + 273.15}",
               formula_filled:  "pKa = 0.09018 + 2729.92 ÷ ({T_celsius} + 273.15)",
@@ -641,9 +637,7 @@ med stigande temperatur. Vi måste beräkna pKa för att kunna beräkna fri ammo
                 high_text:   "Låg temperatur — pKa är högt, vilket innebär att en mindre andel av TAN existerar som fri NH₃. Psykrofil rötning eller rötning vid omgivningstemperatur."
               },*/
 
-              educational_text: `pKa för ammoniumjonen varierar med temperaturen enligt van't Hoff-ekvationen.
-Formeln som används här (Emerson m.fl., 1975) är välciterad i vatten- och
-avloppsbehandlingslitteraturen och ger noggranna resultat i det temperatur­intervall som är relevant för biogasanläggningar (15–60 °C).
+              educational_text: `pKa för ammoniumjonen varierar med temperaturen enligt van't Hoff-ekvationen. Formeln som används här (Emerson m.fl., 1975) är välciterad i vatten- och avloppsbehandlingslitteraturen och ger noggranna resultat i det temperatur­intervall som är relevant för biogasanläggningar (15–60 °C).
 
 Referensvärden:
   25 °C → pKa ≈ 9,25
@@ -675,8 +669,7 @@ Referensvärden:
                 high_text:   "Hög nivå av fri ammoniak. Detta kan leda till störning i processen, nogrann monitorering rekommenderas"
               },
 
-              educational_text: `Hämning från fri ammoniak är en av de vanligaste orsakerna till
-processobalans i biogasanläggningar som tar emot kväverika substrat (t. ex. hönsgödsel och slaktavfall).`
+              educational_text: `Hämning p.g.a. fri ammoniak är en av de vanligaste orsakerna till processobalans i biogasanläggningar som tar emot kväverika substrat (t. ex. hönsgödsel och slakteriavfall).`
             }
 
           ] // slut på delekvationer för ammoniakgruppen
@@ -688,11 +681,11 @@ processobalans i biogasanläggningar som tar emot kväverika substrat (t. ex. h�
         {
           id: "n-mineralization",
           title: "Kvävemineralisering (ML)",
-          intro: `Under rötningsprocessen omvandlas en del av det organiska kvävet i substratet
-till ammoniumkväve (NH₄⁺-N) — en process som kallas kvävemineralisering. Graden
-av mineralisering anger hur stor andel av substratets organiska kväve (ex. i form av proteiner) som
-frigjorts som ammonium i rötresten och är ett mått på effektiviteten i biogasprocessen. 
-Kvävemineraliseringen påverkar rötrestens gödselvärde, eftersom det mineraliserade kvävet kan tas upp direkt av växterna.`,
+          intro: `Under rötningsprocessen omvandlas en del av det organiska kvävet i substratet till ammoniumkväve (NH₄⁺-N) — en process som kallas kvävemineralisering. 
+          <br><br>
+          Graden av kvävemineralisering anger hur stor andel av substratets organiska kväve (ex. i form av proteiner) som frigjorts som ammonium i rötresten och är ett mått på effektiviteten i biogasprocessen. 
+          <br><br>
+          Kvävemineraliseringen påverkar rötrestens gödselvärde, eftersom det mineraliserade kvävet kan tas upp direkt av växterna.`,
 
           formula_latex:   "ML\\,(\\%) = \\frac{NH_4^+\\text{-}N_{rötrest} - NH_4^+\\text{-}N_{substrat}}{\\text{Org-}N_{substrat}} \\times 100",
           formula_filled:  "ML = ({tan_digestate} − {tan_substrate}) ÷ {org_n_substrate} × 100",
@@ -753,11 +746,9 @@ Kvävemineraliseringen påverkar rötrestens gödselvärde, eftersom det mineral
     {
       id: "process-evaluation",
       title: "Processutvärdering",
-      intro: `Här beräknas nyckeltal för att utvärdera hur effektivt biogasanläggningen
-omvandlar substrat till metan. De två viktigaste måtten är den
-specifika metanproduktionen (SMP) och den volumetriska
-metanproduktionen. 
-Processutvärdering omfattar även beräkning av utrötningsgrad (VS-reduktion, se fliken Driftparametrar) och kvävemineralisering (se fliken Kväve).`,
+      intro: `Här beräknas nyckeltal för att utvärdera hur effektivt biogasanläggningen omvandlar substrat till metan. De två viktigaste måtten är den specifika metanproduktionen (SMP) och den volumetriska metanproduktionen. 
+      <br><br>
+      Processutvärdering omfattar även beräkning av utrötningsgrad (se fliken Driftparametrar) och kvävemineralisering (se fliken Kväve).`,
 
       equations: [
 
@@ -767,8 +758,7 @@ Processutvärdering omfattar även beräkning av utrötningsgrad (VS-reduktion, 
         {
           id: "smp",
           title: "Specifik metanproduktion (SMP)",
-          intro: `SMP mäter hur mycket metan anläggningen producerar per enhet organiskt
-material (VS) som matas in.`,
+          intro: `SMP mäter hur mycket metan anläggningen producerar per enhet organiskt material (VS) som matas in.`,
 
           formula_latex:   "SMP = \\frac{V_{CH_4}}{m_{våt} \\times VS\\,(\\%)} \\times 100",
           formula_filled:  "SMP = {v_ch4} m³ CH₄ ÷ ({m_wet_smp} ton × {vs_smp} %) × 100",
@@ -826,8 +816,7 @@ material (VS) som matas in.`,
         {
           id: "mp-vol",
           title: "Volumetrisk metanproduktion",
-          intro: `Den volumetriska metanproduktionen anger hur mycket metan som
-produceras per kubikmeter aktiv reaktorvolym och dag.`,
+          intro: `Den volumetriska metanproduktionen anger hur mycket metan som produceras per kubikmeter aktiv reaktorvolym och dag.`,
 
           formula_latex:   "MP_{vol} = \\frac{V_{CH_4}}{V_R}",
           formula_filled:  "MP_vol = {v_ch4_daily} m³ CH₄/d ÷ {v_reactor} m³",
@@ -863,15 +852,11 @@ produceras per kubikmeter aktiv reaktorvolym och dag.`,
             max:         1.5,
             unit:        "m³ CH₄/(m³·d)",
             low_text:    "Låg volumetrisk produktion. Reaktorvolymen utnyttjas ineffektivt — reaktorn kan vara överdimensionerad i förhållande till biogaspotentialen, eller processen störs.",
-            normal_text: "MP_vol är inom det typiska intervallet för mesofila gårdsbiogasanläggningar.",
+            normal_text: "Volumetrisk metanproduktion är inom det typiska intervallet för mesofila gårdsbiogasanläggningar.",
             high_text:   "Hög volumetrisk produktion. Reaktorn belastas hårt — kontrollera att OLR, SMP och processtabilitet är godtagbara."
           },
 
-          educational_text: `Den volumetriska metanproduktionen är ett praktiskt nyckeltal för att
-bedöma om reaktorn dimensionerats rätt i förhållande till tillgängligt
-substrat.
-
-…`
+          educational_text: `Den volumetriska metanproduktionen är ett praktiskt nyckeltal för att bedöma om reaktorn dimensionerats rätt i förhållande till tillgängligt substrat.`
         }
 
       ] // slut på ekvationer: Flik 3
@@ -886,14 +871,15 @@ substrat.
       id:    "codigestion",
       type:  "codigestion",
       title: "Samrötning",
-      intro: `Samrötning innebär att två eller flera substrat rötas tillsammans i samma biogasreaktor. Genom att kombinera substrat kan man förbättra TS-halt, C/N-kvot och öka metanutbytet.
-
-
-Välj ett primärt substrat och ange andelen av ett sekundärt substrat för att se hur blandningen påverkar TS- och VS-halt, C/N-kvot och metanpotential (BMP). BMP beräknas teoretiskt som summan av metanpotentialen för respektive substrat i proportion till inblandad mängd, utan att ta hänsyn till eventuella synergieffekter vid samrötning.  Alla beräkningar avser ett intag på 1 ton (1 000 kg) våtvikt.
-
-Använd förvalda värden, justera dem eller definiera ett eget substrat med specifika egenskaper.
-
-Obs! De förvalda värdena är exempelvärden och bör inte betraktas som representativa för alla substrat. Verkliga värden varierar beroende på substratets kvalitet, gödselhantering, driftparametrar, m.m.`,
+      intro: `Samrötning innebär att två eller flera substrat rötas tillsammans i samma biogasreaktor. Genom att kombinera substrat kan man förbättra bl.a. TS-halt, C/N-kvot och öka metanutbytet.
+      <br><br>
+      Välj ett primärt substrat och ange andelen av ett sekundärt substrat för att se hur blandningen påverkar TS- och VS-halt, C/N-kvot och metanpotential (BMP). 
+      <br><br>
+      BMP beräknas teoretiskt som summan av metanpotentialen för respektive substrat i proportion till inblandad mängd, utan att ta hänsyn till eventuella synergieffekter vid samrötning.  Alla beräkningar avser ett intag på 1 ton (1 000 kg) våtvikt.
+      <br><br>
+      Använd förvalda värden, justera dem eller definiera ett eget substrat med specifika egenskaper.
+      <br><br>
+      Obs! De förvalda värdena är exempelvärden och bör inte betraktas som representativa för alla substrat. Verkliga värden varierar beroende på substratets kvalitet, gödselhantering, driftparametrar, m.m.`,
 
       // -----------------------------------------------------------
       // Standardinställningar
@@ -992,7 +978,7 @@ Obs! De förvalda värdena är exempelvärden och bör inte betraktas som repres
           text: "TS-halten ({value} %) är hög för våtrötning – kan kräva spädning." },
         // Samrötningsvarningar
         { context: "codig", variable: "ts_codig_pct",  operator: ">", threshold: 15,
-          text: "TS-halten i blandningen är {value} % (> 15 %) – risk för bl. a. ineffektiv omrörning." },
+          text: "TS-halten i blandningen, {value} % (> 15 %), är hög för våtrötning – kan kräva spädning." },
         { context: "codig", variable: "cn_codig",       operator: "<", threshold: 15,
           text: "C/N-kvoten i blandningen är {value} (< 15) – förhöjd risk för ammoniakinhibering." },
         { context: "codig", variable: "cn_codig",       operator: ">", threshold: 30,
