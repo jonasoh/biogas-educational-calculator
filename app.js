@@ -544,7 +544,7 @@ function updateRangeIndicator(eq, result) {
     return;
   }
 
-  const { min, max, unit, low_text, normal_text, high_text } = eq.typical_range;
+  const { min, max, unit, low_text, normal_text, high_text, positive_high } = eq.typical_range;
   el.hidden = false;
   el.classList.remove("range-low", "range-ok", "range-high");
 
@@ -555,7 +555,7 @@ function updateRangeIndicator(eq, result) {
     label = "Värdet är lågt";
     text  = low_text;
   } else if (result > max) {
-    cls   = "range-high";
+    cls   = positive_high ? "range-ok" : "range-high";
     label = "Värdet är högt";
     text  = high_text;
   } else {

@@ -370,14 +370,15 @@ Obs! Om endast torrsubstanshalten (TS) är känd och askhalten saknas kan VS-hal
             }
           ],
 
-          /*typical_range: {
+          typical_range: {
             min:         40,
             max:         70,
             unit:        "%",
             low_text:    "Låg utrötningsgrad — en stor del av det organiska materialet har inte brutits ned. Det kan tyda på kort retentionstid, låg temperatur eller substrat som är svårnedbrytbart.",
             normal_text: "Utrötningsgraden är inom det typiska intervallet för anaerob rötning.",
-            high_text:   "Hög utrötningsgrad — en stor del av det organiska materialet har omvandlats till biogas. Kontrollera att beräkningsunderlagen är rimliga."
-          },*/
+            high_text:   "Hög utrötningsgrad — en stor del av det organiska materialet har omvandlats till biogas. Kontrollera att beräkningsunderlagen är rimliga.",
+            positive_high: true
+          },
 
           educational_text: `Utrötningsgraden/VS reduktionen är ett viktigt mått på hur effektivt rötkammaren bryter
 ned det organiska materialet. Typiska värden för välfungerande anläggningar som rötar lantbrukssubstrat ligger mellan 30 och 70%, beroende på substrat och driftbetingelser. Lättnedbrytbara substrat som matavfall och energigrödor ger ofta högre
@@ -731,7 +732,8 @@ Referensvärden:
             unit:        "%",
             low_text:    "Låg mineralisering — en stor del av kvävet finns kvar i organisk form i rötresten. Kväveföreningar kräver vidare nedbrytning i marken.",
             normal_text: "Mineraliseringsgraden är inom det typiska intervallet för anaerob rötning av lantbrukssubstrat.",
-            high_text:   "Hög mineralisering — en stor andel av det organiska kvävet har omvandlats till ammonium. Rötresten har ett högt innehåll av direkt växttillgängligt kväve."
+            high_text:   "Hög mineralisering — en stor andel av det organiska kvävet har omvandlats till ammonium. Rötresten har ett högt innehåll av direkt växttillgängligt kväve.",
+            positive_high: true
           },
 
           /*educational_text: `Kvävemineraliseringen är ett ytterligare mått på effektiviteten i biogasprocessen. Värdet kan även användas för att beräkna hur mycket ammoniumkväve som kan bildas när man tillför ett nytt substrat till sin substratmix.`*/
