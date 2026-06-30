@@ -380,14 +380,9 @@ Obs! Om endast torrsubstanshalten (TS) är känd och askhalten saknas kan VS-hal
             positive_high: true
           },
 
-          educational_text: `Utrötningsgraden/VS reduktionen är ett viktigt mått på hur effektivt rötkammaren bryter
-ned det organiska materialet. Typiska värden för välfungerande anläggningar som rötar lantbrukssubstrat ligger mellan 30 och 70%, beroende på substrat och driftbetingelser. Lättnedbrytbara substrat som matavfall och energigrödor ger ofta högre
-utrötningsgrad än exempelvis halm och fastgödsel.
-<br><br>
-Observera att formeln bygger på ett förenklat antagande om att volymen in
-och ut är densamma. I praktiken minskar volymen till följd av
-gasbildningen, vilket innebär att den beräknade utrötningsgraden är en
-underskattning av den verkliga nedbrytningen.`
+          educational_text: `Utrötningsgraden/VS reduktionen är ett viktigt mått på hur väl det organiska materialet bryts ner. Typiska värden för välfungerande anläggningar som rötar lantbrukssubstrat ligger mellan 30 och 60%, beroende på substrat och driftbetingelser. Lättnedbrytbara substrat som matavfall och energigrödor ger ofta högre utrötningsgrad än exempelvis halm och fastgödsel.
+          <br><br>
+          Observera att formeln bygger på ett förenklat antagande om att volymen in och ut är densamma. I praktiken minskar volymen till följd av gasbildningen, vilket innebär att den beräknade utrötningsgraden är en underskattning av den verkliga nedbrytningen.`
         },
 
         // -------------------------------------------------------
@@ -505,9 +500,9 @@ OLR kan beräknas på två ekvivalenta sätt som visas nedan.`,
                 min:         1.0,
                 max:         3.5,
                 unit:        "kg VS/(m³·d)",
-                low_text:    "Reaktorn är lågt belastad, vilket kan innebära att den tillgängliga reaktorvolymen inte utnyttjas effektivt.",
+                low_text:    "Processen har låg belastning, vilket kan innebära att den tillgängliga reaktorvolymen inte utnyttjas effektivt.",
                 normal_text: "OLR är inom det typiska driftsintervallet.",
-                high_text:   "Reaktorn är hårt belastad. Det finns risk för störning eller låg nedbrytningsgrad."
+                high_text:   "Processen har hög belastning. Det finns risk för störning eller låg nedbrytningsgrad. Noggrann övervakning av processparametrar rekommenderas."
               },
 
               educational_text: `Den organiska belastningen är en mycket viktig parameter för en biogasanläggning. Den definierar förhållandet mellan mängden inmatat substrat och reaktorns storlek. Runt 1-3 kg VS/(m³·d) är vanligt för kontinuerligt matade processer baserade på lantbrukssubstrat.`
@@ -548,7 +543,16 @@ OLR kan beräknas på två ekvivalenta sätt som visas nedan.`,
               result_unit:     "kg VS / (m³·d)",
               result_decimals: 2,
 
-              //educational_text: null //``
+              typical_range: {
+                min:         1.0,
+                max:         3.5,
+                unit:        "kg VS/(m³·d)",
+                low_text:    "Processen har låg belastning, vilket kan innebära att den tillgängliga reaktorvolymen inte utnyttjas effektivt.",
+                normal_text: "OLR är inom det typiska driftsintervallet.",
+                high_text:   "Processen har hög belastning. Det finns risk för störning eller låg nedbrytningsgrad. Noggrann övervakning av processparametrar rekommenderas."
+              },
+
+              educational_text: `Den organiska belastningen är en mycket viktig parameter för en biogasanläggning. Den definierar förhållandet mellan mängden inmatat substrat och reaktorns storlek. Runt 1-3 kg VS/(m³·d) är vanligt för kontinuerligt matade processer baserade på lantbrukssubstrat.`
             }
 
           ] // slut på OLR-ekvationer
