@@ -993,8 +993,8 @@ Referensvärden:
       // OBS - improviserade mha LLM.
       warnings: [
         // Monosubstratvarninga
-        { context: "mono", variable: "cn_mono",     operator: "<", threshold: 15,
-          text: "C/N-kvoten för {name} är {value} (< 15) – risk för ammoniakinhibering." },
+        { context: "mono", variable: "cn_mono",     operator: "<", threshold: 10,
+          text: "C/N-kvoten för {name} är {value} (< 10) – risk för ammoniakinhibering." },
         { context: "mono", variable: "cn_mono",     operator: ">", threshold: 30,
           text: "C/N-kvoten för {name} är {value} (> 30) – kvävebegränsning kan försämra processen." },
         { context: "mono", variable: "ts_mono_pct", operator: ">", threshold: 15,
@@ -1002,8 +1002,8 @@ Referensvärden:
         // Samrötningsvarningar
         { context: "codig", variable: "ts_codig_pct",  operator: ">", threshold: 15,
           text: "TS-halten i blandningen, {value} % (> 15 %), är hög för våtrötning – kan kräva spädning." },
-        { context: "codig", variable: "cn_codig",       operator: "<", threshold: 15,
-          text: "C/N-kvoten i blandningen är {value} (< 15) – förhöjd risk för ammoniakinhibering." },
+        { context: "codig", variable: "cn_codig",       operator: "<", threshold: 10,
+          text: "C/N-kvoten i blandningen är {value} (< 10) – förhöjd risk för ammoniakinhibering." },
         { context: "codig", variable: "cn_codig",       operator: ">", threshold: 30,
           text: "C/N-kvoten i blandningen är {value} (> 30) – kvävebegränsning kan försämra processen." },
         { context: "codig", variable: "ch4_change_pct", operator: ">", threshold: 10,
