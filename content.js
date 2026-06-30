@@ -151,7 +151,7 @@ Organisk belastning (Organic Loading Rate, OLR) och
 hydraulisk retentionstid eller uppehållstid (Hydraulic Retention Time, HRT) anger sedan hur mycket reaktorn belastas och hur länge materialet
 uppehåller sig inne i rötkammaren.
 
-Du kan läsa mer om dessa beräkningar i <a href="assets/handbok.pdf?p=72#page=72">handboken på s 72–74</a>. `,
+Du kan läsa mer om dessa beräkningar i handboken på s. 72-74. `,
 
       equations: [
 
@@ -573,8 +573,7 @@ OLR kan beräknas på två ekvivalenta sätt som visas nedan.`,
       För mycket kväve kan dock vara toxiskt för vissa mikroorganismer och leda till störningar i processen. 
       <br><br>
       Kväveinnehållet är också viktigt för rötrestens kvalitet, eftersom det påverkar dess värde som gödningsmedel.
-
-Läs mer i <a href="assets/handbok.pdf?p=76#page=76">handboken s. 76–79</a>.`,
+      Läs mer i handboken på s. 76-79.`,
 
       equations: [
 
