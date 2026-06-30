@@ -79,7 +79,7 @@ const CODIGESTION_SUBSTRATES = [
     id: "notflytgodsel",
     name: "Nötflytgödsel",
     ts: 9, vs_ts: 0.80, bmp: 213, cn: 13,
-    note: "Typiskt bassubstrat. Kan orsaka svämtäcke. Redan delvis nedbrutet (dåligt gasutbyte)"
+    note: "Typiskt bassubstrat. Kan orsaka svämtäcke. Redan delvis nedbrutet (lågt gasutbyte)."
   },
   {
     id: "svingodsel",
@@ -101,10 +101,10 @@ const CODIGESTION_SUBSTRATES = [
     note: "Kan orsaka svämtäcke pga fjädrar, kan innehålla sand, grus och skal som sedimenterar. Ej lämpligt som ensamt substrat pga högt kväveinnehåll."
   },
   {
-    id: "slakteriavfall_magtarm",
-    name: "Slakteriavfall (mag/tarm)",
-    ts: 16, vs_ts: 0.83, bmp: 434, cn: 30,
-    note: "Energirikt substrat med högt gasutbyte. Lämpar sig mindre bra som ensamt substrat, risk för sjunkande pH."
+    id: "slakteriavfall_mjukdelar",
+    name: "Slakteriavfall (mjukdelar)",
+    ts: 30, vs_ts: 0.83, bmp: 500, cn: 4,
+    note: "Energirikt substrat med högt gasutbyte. Kväverikt pga högt proteininnehåll. Lämpar sig mindre bra som ensamt substrat."
   },
   {
     id: "returprodukt_mejeri",
@@ -128,8 +128,8 @@ const CODIGESTION_SUBSTRATES = [
   {
     id: "djupstro_not",
     name: "Djupströ, nöt",
-    ts: 30, vs_ts: 0.80, bmp: 250, cn: 80,
-    note: "Kolrikt material, lämpar sig väl att samrötas med kväverikt substrat. Kan innehålla sand och grus som sedimenterar."
+    ts: 30, vs_ts: 0.80, bmp: 100, cn: 20,
+    note: "TS, VS/TS och C/N-kvot kan variera mycket mellan olika gårdar beroende på bland annat foder, strömaterial och gödselhantering. Kan innehålla sand och grus som sedimenterar."
   },
 ];
 
@@ -144,10 +144,10 @@ const CALCULATOR_CONTENT = {
       id: "biomass-loading",
       title: "Driftparametrar",
       intro: `I detta avsnitt beräknas grundläggande parametrar för att karakterisera biogassubstrat och -processer. 
-Torrsubstans (Total Solids, TS) och glödförlust (Volatile Solids, VS) beskriver hur stor
-andel av substratet som är torrsubstans respektive hur stor del av den som
-är biologiskt (teoretiskt) nedbrytbar. Organisk belastning (Organic Loading Rate, OLR) och
-hydraulisk retentionstid (Hydraulic Retention Time, HRT) anger sedan hur hårt reaktorn belastas och hur länge materialet
+Torrsubstansen (Total Solids, TS) anger den fasta fraktionen i materialet, medan organisk substans (Volatile Solids, VS) visar hur stor del av torrsubstansen som är biologiskt nedbrytbar. 
+
+Organisk belastning (Organic Loading Rate, OLR) och
+hydraulisk retentionstid eller uppehållstid (Hydraulic Retention Time, HRT) anger sedan hur mycket reaktorn belastas och hur länge materialet
 uppehåller sig inne i rötkammaren.
 
 Du kan läsa mer om dessa beräkningar i <a href="assets/handbok.pdf?p=72#page=72">handboken på s 72–74</a>. `,
@@ -167,12 +167,15 @@ Du kan läsa mer om dessa beräkningar i <a href="assets/handbok.pdf?p=72#page=7
         {
           id:    "dry-matter",
           title: "Torrsubstansbestämning",
-          intro: `Dessa tre storheter bestäms alltid tillsammans från samma laboratorieprov.
+          intro: `Våtvikt, torrvikt och askvikt bestäms alltid tillsammans från samma laboratorieprov.
+
 Man väger det färska provet, torkar det vid 105°C och väger igen (ger
-torrsubstans, TS), glödgar sedan det torra provet vid 550°C och väger
+torrsubstans, TS), glödgar sedan det torra provet vid 350-550°C och väger
 askan (ger glödförlusten, VS). 
 
-Ange de tre massorna nedan för att beräkna värdena.`,
+Ange de tre massorna nedan för att beräkna TS- och VS-halt.
+
+(I vissa fall mäts enbart torrsubstansen av laboratoriet. Om du inte har askvikt kan du lämna detta fält tomt — VS beräknas då inte. Alternativt kan du ange en uppskattad askhalt för att få ett ungefärligt VS-värde.)`,
 
           // Delade indata — anges en gång, används av alla delekvationer nedan
           parameters: [
@@ -180,7 +183,7 @@ Ange de tre massorna nedan för att beräkna värdena.`,
               id:          "m_wet",
               name:        "Våtvikt",
               unit:        "g",
-              description: "Ursprunglig massa av det otorkade provet",
+              description: "Provets ursprungliga massa.",
               //placeholder: 100,
               min: 0,
               step: 1,
@@ -190,7 +193,7 @@ Ange de tre massorna nedan för att beräkna värdena.`,
               id:          "m_dry",
               name:        "Torrvikt",
               unit:        "g",
-              description: "Provets massa efter torkning vid 105°C i 24 h",
+              description: "Provets massa efter torkning.",
               //placeholder: 18,
               min: 0,
               step: 1,
@@ -200,7 +203,7 @@ Ange de tre massorna nedan för att beräkna värdena.`,
               id:          "m_ash",
               name:        "Askvikt",
               unit:        "g",
-              description: "Massa kvar efter glödgning vid 550°C i 4 h",
+              description: "Massa kvar efter glödgning.",
               //placeholder: 2,
               min: 0,
               step: 0.1,
@@ -214,8 +217,7 @@ Ange de tre massorna nedan för att beräkna värdena.`,
             {
               id:    "ts",
               title: "Torrsubstans (TS)",
-              intro: `Torrsubstans (Total Solids, TS) är den del av substratet som återstår efter att
-allt vatten har torkats bort. Den bestäms genom att väga ett prov före och efter torkning vid 105°C i 24 timmar.`,
+              intro: `Torrsubstans (Total Solids, TS) är den del av materialet (ex. substrat och rötrest) som återstår efter att allt vatten har torkat.` /*Den bestäms genom att väga ett prov före och efter torkning vid 105°C i 24 timmar.*/,
 
               formula_latex:   "TS\\,(\\%) = \\frac{m_{torr}}{m_{våt}} \\times 100",
               formula_filled:  "TS = ({m_dry} g ÷ {m_wet} g) × 100",
@@ -234,32 +236,21 @@ allt vatten har torkats bort. Den bestäms genom att väga ett prov före och ef
                 high_text:   "Högt TS — substratet är relativt torrt (t.ex. halm, torkat gödsel). Vanlig våtrötning kan vara svår; överväg förspädning eller torrötning."
               },*/ 
 
-              educational_text: `Total Solids (TS) är en av de mest grundläggande karakteriseringsparametrarna
-inom biogasteknik. Eftersom biogasanläggningar typiskt hanterar substrat med
-vitt skilda vattenhalter — från flytande nötflytgödsel (3–10 % TS) till torrt
-halm (80–90 % TS) — är det avgörande att känna till TS-halten för att kunna
-beräkna massbalanser, dimensionera pumpar och omrörare samt utforma
-värmeväxlare.
-
-Mätningen är i sig enkel: ett avvägt prov torkas vid 105 °C tills massan
+              educational_text: `Total Solids (TS) är en av de viktigaste parametrarna för att beskriva ett substrat eller en rötrest. Eftersom olika substrat innehåller mycket olika mängder vatten – från flytgödsel (3-10% TS) till torr halm (80-90% TS) – är TS-halten viktig för att kunna planera inmatning, beräkna belastningen på processen och jämföra olika substrat.` 
+              /*Mätningen är i sig enkel: ett avvägt prov torkas vid 105 °C tills massan
 stabiliseras och vägs sedan igen. Den förlorade massan är vatten; den
 kvarvarande massan är Total Solids. Observera att vid 105 °C avlägsnas
 endast fritt vatten — kristallvatten och flyktiga föreningar fångas inte
 fullt ut, men för praktiskt biogasarbete ger denna standardmetod konsekventa
-och jämförbara resultat.
-
-Vid jämförelse av substrat eller uppföljning av en anläggning över tid ska
-TS alltid anges på färskviktsbasis (FM, Fresh Matter), enligt denna ekvation.`
+och jämförbara resultat.*/
             },
 
             // Delekvation 2: Volatile Solids
             {
               id:    "vs",
-              title: "Glödförlust (Volatile Solids, VS)",
-              intro: `Volatile Solids (VS) representerar den organiska fraktionen av
-torrsubstansen — den del som i princip kan brytas ned av mikroorganismer
-för att producera biogas. Askan som återstår efter glödgning vid 550 °C
-är den oorganiska fraktionen (mineralfraktionen).`,
+              title: "Organisk substans (VS)",
+              intro: `Volatile Solids (VS) representerar den organiska fraktionen av materialet — den del som i teorin kan brytas ned av mikroorganismer för att producera biogas. 
+              (Askan som återstår efter glödgning är den oorganiska fraktionen (mineralfraktionen) som inte är biologiskt nedbrytbar.)`,
 
               formula_latex:   "VS\\,(\\%) = \\frac{m_{torr} - m_{aska}}{m_{våt}} \\times 100",
               formula_filled:  "VS = (({m_dry} g − {m_ash} g) ÷ {m_wet} g) × 100",
@@ -278,14 +269,13 @@ för att producera biogas. Askan som återstår efter glödgning vid 550 °C
                 high_text:   "Mycket högt VS — substratet är både torrt och starkt organiskt. Utmärkt biogaspotential per kg färskvikt."
               },*/
 
-              educational_text: `Volatile Solids (VS) är den viktigaste parametern för att bedöma biogaspotential.
+              educational_text: `Volatile Solids (VS) är den viktigaste parametern för att bedöma biogaspotential och utvärdera utrötningsgrad och metanutbyte.
+
 Endast den organiska fraktionen av ett substrat kan omvandlas till biogas
 av anaeroba mikroorganismer; mineralfraktionen (sand, salter, etc.)
 passerar reaktorn oförändrad och ansamlas som fasta ämnen i rötresten.
 
-Det specifika metanutbytet för ett substrat (uppmätt i
-så kallade BMP-tester, Biochemical Methane Potential) anges
-alltid per kg VS som tillsatts, inte per kg TS eller per kg färskvikt.
+Det specifika metanutbytet (SMP) metanpotentialen (BMP) för ett substrat anges alltid per kg VS, inte per kg TS eller per kg färskvikt.
 Detta möjliggör rättvis jämförelse mellan substrat med olika fukt- och
 askhalter.`
             },
@@ -294,8 +284,9 @@ askhalter.`
             {
               id:    "vsts",
               title: "VS (% av TS)",
-              intro: `VS som % av TS anger vilken andel av torrsubstansen som är organisk.
-Den beräknas automatiskt från TS- och VS-värdena ovan.`,
+              intro: `VS som % av TS anger hur stor andel av torrsubstansen som är organisk. Den beräknas automatiskt från TS- och VS-värdena ovan.
+
+              Observera att VS/TS alltid måste vara ≤ 100 %. Om din beräkning ger ett värde över 100 %, kontrollera laboratoriemätningarna — askans massa kan inte överstiga torrmassan.`,
 
               formula_latex:   "\\frac{VS}{TS}\\,(\\%) = \\frac{VS}{TS} \\times 100",
               // {TS} och {VS} substitueras från de beräknade resultaten ovan
@@ -315,19 +306,9 @@ Den beräknas automatiskt från TS- och VS-värdena ovan.`,
                 high_text:   "Mycket högt VS/TS — nästan helt organisk torrsubstans. Utmärkt substratkvalitet för biogasproduktion."
               }*/,
 
-              educational_text: `VS som % av TS är ett av de enklaste och mest användbara talen vid
-substratkvalificering. Typiska värden sträcker sig från ungefär 60 % för
-rötrest eller jordförorenade material upp till 95 % för rena energigrödor
-som majsensilage eller odlade gräs.
+              educational_text: `Typiska värden sträcker sig från ungefär 60 % för rötrest eller material med stor andel grus och jord, upp till >95 % för exempelvis rena energigrödor som majsensilage eller odlade gräs. I det senare fallet är i princip all torrsubstans organiskt material som kan brytas ned till biogas.
 
-En praktisk tumregel: om du känner till TS-halten och VS/TS-kvoten för ditt
-substrat kan du snabbt uppskatta dess biokemiska metanpotential (BMP,
-Biochemical Methane Potential) genom att multiplicera ett litteraturvärde
-för BMP (typiskt angivet i NL CH₄/kg VS) med VS-halten.
-
-Observera att VS/TS alltid måste vara ≤ 100 %. Om din beräkning ger ett
-värde över 100 %, kontrollera laboratoriemätningarna — askmassan kan inte
-överstiga torrmassan.`
+Obs! Om endast torrsubstanshalten (TS) är känd och askhalten saknas kan VS-halten och VS/TS-kvoten inte beräknas. I sådana fall måste VS uppskattas utifrån tabell- eller schablonvärden. Som en grov tumregel kan man för många organiska substrat anta att VS utgör cirka 80-90% av TS.`
             }
 
           ] // slut på delekvationer för torrsubstansgruppen
@@ -339,9 +320,8 @@ värde över 100 %, kontrollera laboratoriemätningarna — askmassan kan inte
         {
           id: "degradation-efficiency",
           title: "Utrötningsgrad",
-          intro: `Utrötningsgraden anger hur stor del av det organiska materialet som gått in i
-processen som brutits ned och omvandlats till biogas. Det är skillnaden i
-organiskt innehåll mellan ingående och utgående material, angiven i procent.`,
+          intro: `Utrötningsgraden eller VS reduktionen anger hur stor del av det organiska materialet (VS) i substratet som brutits ned och omvandlats till biogas. 
+Det är skillnaden i organiskt innehåll mellan ingående och utgående material, angiven i procent.`,
 
           formula_latex:   "E\\,(\\%) = \\left(1 - \\frac{TS_{utgående} \\times VS_{utgående}}{TS_{substrat} \\times VS_{substrat}}\\right) \\times 100",
           formula_filled:  "E = (1 − ({ts_out} × {vs_out}) ÷ ({ts_in} × {vs_in})) × 100",
@@ -399,16 +379,15 @@ organiskt innehåll mellan ingående och utgående material, angiven i procent.`
             high_text:   "Hög utrötningsgrad — en stor del av det organiska materialet har omvandlats till biogas. Kontrollera att beräkningsunderlagen är rimliga."
           },*/
 
-          educational_text: `Utrötningsgraden är ett viktigt mått på hur effektivt rötkammaren bryter
-ned det organiska materialet. Typiska värden för välskötta anläggningar
-ligger mellan 40 och 70 %, beroende på substrat och driftbetingelser.
+          educational_text: `Utrötningsgraden/VS reduktionen är ett viktigt mått på hur effektivt rötkammaren bryter
+ned det organiska materialet. Typiska värden för välskötta anläggningar som rötar lantbrukssubstrat ligger mellan 30 och 70%, beroende på substrat och driftbetingelser.
 Lättnedbrytbara substrat som matavfall och energigrödor ger ofta högre
-utrötningsgrad än exempelvis halm och fibröst material.
+utrötningsgrad än exempelvis halm och fastgödsel.
 
 Observera att formeln bygger på ett förenklat antagande om att volymen in
-och ut är densamma. I praktiken minskar volymen något till följd av
+och ut är densamma. I praktiken minskar volymen till följd av
 gasbildningen, vilket innebär att den beräknade utrötningsgraden är en
-något underskattning av den verkliga nedbrytningen.`
+underskattning av den verkliga nedbrytningen.`
         },
 
         // -------------------------------------------------------
@@ -455,9 +434,9 @@ något underskattning av den verkliga nedbrytningen.`
             min:         20,
             max:         50,
             unit:        "dygn",
-            low_text:    "Låg HRT. Material passerar snabbt genom rötkammaren. Risk för att substratnedbrytningen blir ofullständig (låg nebrytningsgrad).",
+            low_text:    "Låg HRT. Material passerar snabbt genom rötkammaren. Risk för att substratnedbrytningen blir ofullständig (låg utrötningsgrad).",
             normal_text: "HRT är inom det typiska intervallet för processer baserade på lantbrukssubstrat.",
-            high_text:   "Hög HRT. Materialet har lång uppehållstid, vilket gynnar hög nedbrytningseffektivitet men eventuellt leder till låg volumetrisk gasproduktion."
+            high_text:   "Hög HRT. Materialet har lång uppehållstid, vilket gynnar utrötningsgraden men eventuellt leder till låg volumetrisk gasproduktion."
           },
 
           educational_text: `Retentionstiden är en grundläggande parameter
@@ -912,7 +891,9 @@ substrat.
 
 Välj ett primärt substrat och ange andelen av ett sekundärt substrat för att se hur blandningen påverkar TS- och VS-halt, C/N-kvot och metanpotential (BMP). BMP beräknas teoretiskt som summan av metanpotentialen för respektive substrat i proportion till inblandad mängd, utan att ta hänsyn till eventuella synergieffekter vid samrötning.  Alla beräkningar avser ett intag på 1 ton (1 000 kg) våtvikt.
 
-Använd förvalda värden, justera dem eller definiera ett eget substrat med specifika egenskaper.`,
+Använd förvalda värden, justera dem eller definiera ett eget substrat med specifika egenskaper.
+
+Obs! De förvalda värdena är exempelvärden och bör inte betraktas som representativa för alla substrat. Verkliga värden varierar beroende på substratets kvalitet, gödselhantering, driftparametrar, m.m.`,
 
       // -----------------------------------------------------------
       // Standardinställningar
