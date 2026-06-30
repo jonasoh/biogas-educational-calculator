@@ -371,12 +371,12 @@ Obs! Om endast torrsubstanshalten (TS) är känd och askhalten saknas kan VS-hal
           ],
 
           typical_range: {
-            min:         40,
-            max:         70,
+            min:         30,
+            max:         60,
             unit:        "%",
             low_text:    "Låg utrötningsgrad — en stor del av det organiska materialet har inte brutits ned. Det kan tyda på kort retentionstid, låg temperatur eller substrat som är svårnedbrytbart.",
             normal_text: "Utrötningsgraden är inom det typiska intervallet för anaerob rötning.",
-            high_text:   "Hög utrötningsgrad — en stor del av det organiska materialet har omvandlats till biogas. Kontrollera att beräkningsunderlagen är rimliga.",
+            high_text:   "Hög utrötningsgrad — en stor del av det organiska materialet har omvandlats till biogas. Indikerar effektiv nedbrytning men kontrollera att beräkningsunderlagen är korrekta.",
             positive_high: true
           },
 
